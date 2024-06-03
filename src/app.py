@@ -19,7 +19,7 @@ class AstraApp:
 
         # Crear una instancia del asistente
         self.settings = Settings()
-        self.astra = Assistant(api_key=api_key, device_index=self.settings.get_input_device())
+        self.astra = Assistant(api_key=api_key, device_index=self.settings.get_input_device(), ui_callback=self.append_message)
 
         # Crear componentes de la UI
         self.create_widgets()
@@ -54,16 +54,13 @@ class AstraApp:
 
     def start_recording(self):
         self.recording = True
-        self.text_area.insert(tk.END, f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} [User]: Grabación activada. Hable ahora.\n")
         self.record_button.configure(text="Detener")
         self.recording_thread = threading.Thread(target=self.astra.start_recording)
         self.recording_thread.start()
 
     def stop_recording(self):
         self.recording = False
-        self.text_area.insert(tk.END, f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} [User]: Grabación detenida.\n")
         self.record_button.configure(text="Grabar")
-        # Aquí puedes agregar lógica para detener la grabación si es necesario
 
     def open_sound_settings(self):
         settings_window = ctk.CTkToplevel(self.root)

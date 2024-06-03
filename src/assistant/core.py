@@ -9,10 +9,9 @@ from .vision import Vision
 from .typer import Typer
 
 class Assistant:
-    def __init__(self, api_key):
+    def __init__(self, api_key, device_index):
         self.client = OpenAI(api_key=api_key)
-        device_index = 3
-        self.stt = SpeechToText(model_name="medium", device_index=device_index)  
+        self.stt = SpeechToText(model_name="medium", device_index=device_index)
         self.tts = TextToSpeech(api_key)
         self.vision = Vision()
         self.typer = Typer()
@@ -141,4 +140,3 @@ class Assistant:
             keyboard.wait('esc')
         except KeyboardInterrupt:
             print("Goodbye!")
-

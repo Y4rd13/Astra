@@ -6,3 +6,4 @@ tests/
 old_files/
 image.jpg
 src/assistant/speech.mp3
+__pycache__/

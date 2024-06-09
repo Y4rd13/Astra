@@ -7,7 +7,7 @@ class Settings:
     def __init__(self):
         self.config = {
             "sound": {
-                "input_device": 3  # Default device index
+                "input_device": 2  # Default device index
             },
             "macros": {
                 "record_audio": "ctrl+shift+a"  # Default macro

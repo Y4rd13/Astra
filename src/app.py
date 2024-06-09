@@ -37,16 +37,27 @@ class AstraApp:
         menu_bar.add_cascade(label="Settings", menu=settings_menu)
 
         # Área de texto para mostrar mensajes
-        self.text_area = ctk.CTkTextbox(self.root, width=600, height=400, wrap=tk.WORD)
+        self.text_area = ctk.CTkTextbox(self.root, width=600, height=200, wrap=tk.WORD)
         self.text_area.grid(column=0, row=0, padx=20, pady=20, columnspan=2)
+
+        # Cuadro de texto para entrada del usuario
+        self.user_input = ctk.CTkTextbox(self.root, width=600, height=200, wrap=tk.WORD)
+        self.user_input.grid(column=0, row=1, padx=20, pady=10, columnspan=2)
+
+        # Cargar imagen para el botón de envío
+        self.image_send = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "src", "img", "send.png")))
+
+        # Botón para enviar texto
+        self.send_button = ctk.CTkButton(self.root, text="", command=self.send_text, width=50, height=50, image=self.image_send, fg_color="transparent")
+        self.send_button.grid(column=1, row=2, padx=20, pady=10)
 
         # Cargar imágenes para el botón de grabación
         self.image_record = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "src", "img", "pause-play-00.png")))
         self.image_stop = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "src", "img", "pause-play-01.png")))
 
         # Botón central para grabar audio
-        self.record_button = ctk.CTkButton(self.root, text="", command=self.toggle_recording, width=200, height=50, image=self.image_record)
-        self.record_button.grid(column=0, row=1, padx=20, pady=20, columnspan=2)
+        self.record_button = ctk.CTkButton(self.root, text="", command=self.toggle_recording, width=50, height=50, image=self.image_record, fg_color="transparent")
+        self.record_button.grid(column=0, row=2, padx=20, pady=20)
 
         # Variable para controlar la grabación
         self.recording = False
@@ -71,6 +82,11 @@ class AstraApp:
         command = self.astra.stt.listen_for_activation().lower()
         self.astra.process_command(command)
         self.stop_recording()
+
+    def send_text(self):
+        text = self.user_input.get("1.0", tk.END).strip()
+        if text:
+            self.astra.process_command(text)
 
     def open_sound_settings(self):
         settings_window = ctk.CTkToplevel(self.root)
@@ -140,9 +156,16 @@ class AstraApp:
 
         ctk.CTkButton(settings_window, text="Save", command=save_models_settings).grid(column=0, row=4, padx=10, pady=10, columnspan=2)
 
+    def set_status(self, status):
+        if status == "speaking":
+            self.status_indicator.config(fg="green")
+        else:
+            self.status_indicator.config(fg="red")
+
     def append_message(self, sender, message):
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.text_area.insert(tk.END, f"{timestamp} [{sender}]: {message}\n")
+        self.set_status("idle")
 
 def main():
     root = ctk.CTk()

@@ -27,8 +27,13 @@ class Settings:
 
     def load_config(self):
         if os.path.exists(CONFIG_FILE):
+            print("Loading config file...")
             with open(CONFIG_FILE, 'r') as file:
                 self.config = json.load(file)
+        else:
+            print("Config file not found, creating default config...")
+            print(os.path.abspath(CONFIG_FILE))
+            self.save_config()
     
     def save_config(self):
         with open(CONFIG_FILE, 'w') as file:

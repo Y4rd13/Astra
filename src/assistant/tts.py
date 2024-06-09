@@ -4,10 +4,10 @@ from openai import OpenAI
 from pathlib import Path
 
 class TextToSpeech:
-    def __init__(self, api_key):
+    def __init__(self, api_key, model="tts-1", voice="nova"):
         self.client = OpenAI(api_key=api_key)
-        self.voice = "nova"  # Puedes cambiar a cualquier otra voz disponible: echo, fable, onyx, nova, shimmer
-        self.model = "tts-1"  # Usar tts-1 para calidad estándar o tts-1-hd para alta calidad
+        self.voice = voice
+        self.model = model
 
     def speak(self, text):
         # Generar audio hablado a partir de texto

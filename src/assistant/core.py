@@ -9,11 +9,12 @@ from .vision import Vision
 from .typer import Typer
 
 class Assistant:
-    def __init__(self, api_key, device_index, ui_callback=None):
+    def __init__(self, api_key, device_index, ui_callback=None, settings=None):
         self.client = OpenAI(api_key=api_key)
         self.ui_callback = ui_callback  # Callback para actualizar la UI
-        self.stt = SpeechToText(model_name="medium", device_index=device_index)
-        self.tts = TextToSpeech(api_key)
+        self.settings = settings
+        self.stt = SpeechToText(model_name=self.settings.get_stt_model(), device_index=device_index)
+        self.tts = TextToSpeech(api_key, model=self.settings.get_tts_model(), voice=self.settings.get_tts_voice())
         self.vision = Vision()
         self.typer = Typer()
         self.vision.start()  # Iniciar captura continua en threads separados
@@ -78,7 +79,7 @@ class Assistant:
     def handle_function_call(self, function_call, command):
         function_name = function_call.name
         params = json.loads(function_call.arguments)
-        
+
         if function_name == "analyze_image":
             self.handle_analyze_image(params, command)
         elif function_name == "type_text":
@@ -95,9 +96,13 @@ class Assistant:
             image = self.vision.latest_camera_capture
         query_from_image64 = self.vision.analyze_image(image, command)
         response_image, _ = self.ask_gpt(query_from_image64)
-        description = response_image.choices[0].message.content
-        self.tts.speak(description)
-        self.update_ui("Astra", description)
+        if response_image and response_image.choices[0].message.content:
+            description = response_image.choices[0].message.content
+            self.tts.speak(description)
+            self.update_ui("Astra", description)
+        else:
+            self.tts.speak("Lo siento, no pude analizar la imagen.")
+            self.update_ui("Astra", "Lo siento, no pude analizar la imagen.")
 
     def handle_type_text(self, params):
         text = params["text"]
@@ -111,19 +116,22 @@ class Assistant:
         response, response_time = self.ask_gpt(command)
         if response:
             message = response.choices[0].message
-            self.update_ui("Astra", f"{message.content} (Tiempo de respuesta: {response_time:.2f} segundos)")
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            print(f'[{timestamp}][Mensaje: {command}] (Tiempo de respuesta: {response_time:.2f} segundos)')
 
-            if message.function_call:
-                self.handle_function_call(message.function_call, command)
-            else:
+            if message.content:
                 self.tts.speak(message.content)
                 self.update_ui("Astra", message.content)
-                # Aquí añadimos la lógica para escribir el texto si es necesario
                 if "```" in message.content:
                     explanation = self.typer.type_code(message.content)
                     if explanation:
                         self.tts.speak(explanation)
                         self.update_ui("Astra", explanation)
+            elif message.function_call:
+                self.handle_function_call(message.function_call, command)
+            else:
+                self.tts.speak("Lo siento, no pude procesar tu solicitud.")
+                self.update_ui("Astra", "Lo siento, no pude procesar tu solicitud.")
         else:
             self.tts.speak("Lo siento, hubo un error al procesar tu solicitud.")
             self.update_ui("Astra", "Lo siento, hubo un error al procesar tu solicitud.")

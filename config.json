@@ -1,0 +1,18 @@
+{
+    "sound": {
+        "input_device": 2
+    },
+    "macros": {
+        "record_audio": "ctrl+shift+a"
+    },
+    "models": {
+        "tts": {
+            "model": "tts-1",
+            "voice": "onyx"
+        },
+        "stt": {
+            "model": "medium"
+        },
+        "ai": "gpt-4o"
+    }
+}

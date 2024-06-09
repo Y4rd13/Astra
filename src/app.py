@@ -7,6 +7,7 @@ import threading
 from config.settings import Settings
 import sounddevice as sd
 from datetime import datetime
+from PIL import Image
 
 class AstraApp:
     def __init__(self, root):
@@ -19,7 +20,7 @@ class AstraApp:
 
         # Crear una instancia del asistente
         self.settings = Settings()
-        self.astra = Assistant(api_key=api_key, device_index=self.settings.get_input_device(), ui_callback=self.append_message)
+        self.astra = Assistant(api_key=api_key, device_index=self.settings.get_input_device(), ui_callback=self.append_message, settings=self.settings)
 
         # Crear componentes de la UI
         self.create_widgets()
@@ -39,8 +40,12 @@ class AstraApp:
         self.text_area = ctk.CTkTextbox(self.root, width=600, height=400, wrap=tk.WORD)
         self.text_area.grid(column=0, row=0, padx=20, pady=20, columnspan=2)
 
+        # Cargar imágenes para el botón de grabación
+        self.image_record = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "src", "img", "pause-play-00.png")))
+        self.image_stop = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "src", "img", "pause-play-01.png")))
+
         # Botón central para grabar audio
-        self.record_button = ctk.CTkButton(self.root, text="Grabar", command=self.toggle_recording, width=200, height=50)
+        self.record_button = ctk.CTkButton(self.root, text="", command=self.toggle_recording, width=200, height=50, image=self.image_record)
         self.record_button.grid(column=0, row=1, padx=20, pady=20, columnspan=2)
 
         # Variable para controlar la grabación
@@ -54,13 +59,18 @@ class AstraApp:
 
     def start_recording(self):
         self.recording = True
-        self.record_button.configure(text="Detener")
-        self.recording_thread = threading.Thread(target=self.astra.start_recording)
+        self.record_button.configure(image=self.image_stop)
+        self.recording_thread = threading.Thread(target=self.record_and_process_audio)
         self.recording_thread.start()
 
     def stop_recording(self):
         self.recording = False
-        self.record_button.configure(text="Grabar")
+        self.record_button.configure(image=self.image_record)
+
+    def record_and_process_audio(self):
+        command = self.astra.stt.listen_for_activation().lower()
+        self.astra.process_command(command)
+        self.stop_recording()
 
     def open_sound_settings(self):
         settings_window = ctk.CTkToplevel(self.root)

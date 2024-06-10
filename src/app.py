@@ -156,16 +156,9 @@ class AstraApp:
 
         ctk.CTkButton(settings_window, text="Save", command=save_models_settings).grid(column=0, row=4, padx=10, pady=10, columnspan=2)
 
-    def set_status(self, status):
-        if status == "speaking":
-            self.status_indicator.config(fg="green")
-        else:
-            self.status_indicator.config(fg="red")
-
     def append_message(self, sender, message):
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.text_area.insert(tk.END, f"{timestamp} [{sender}]: {message}\n")
-        self.set_status("idle")
 
 def main():
     root = ctk.CTk()

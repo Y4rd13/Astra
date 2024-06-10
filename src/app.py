@@ -8,6 +8,7 @@ from config.settings import Settings
 import sounddevice as sd
 from datetime import datetime
 from PIL import Image
+import queue
 
 class AstraApp:
     def __init__(self, root):
@@ -24,6 +25,7 @@ class AstraApp:
 
         # Crear componentes de la UI
         self.create_widgets()
+        self.audio_queue = queue.Queue()
 
     def create_widgets(self):
         # Menú de configuración
@@ -79,9 +81,18 @@ class AstraApp:
         self.record_button.configure(image=self.image_record)
 
     def record_and_process_audio(self):
-        command = self.astra.stt.listen_for_activation().lower()
-        self.astra.process_command(command)
+        while self.recording:
+            command = self.astra.stt.listen_for_activation().lower()
+            if command:
+                self.audio_queue.put(command)
+                break
         self.stop_recording()
+        self.process_audio_queue()
+
+    def process_audio_queue(self):
+        while not self.audio_queue.empty():
+            command = self.audio_queue.get()
+            self.astra.process_command(command)
 
     def send_text(self):
         text = self.user_input.get("1.0", tk.END).strip()
@@ -159,6 +170,7 @@ class AstraApp:
     def append_message(self, sender, message):
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.text_area.insert(tk.END, f"{timestamp} [{sender}]: {message}\n")
+        self.text_area.yview(tk.END)  # Desplazar automáticamente al final del texto
 
 def main():
     root = ctk.CTk()
@@ -168,3 +180,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

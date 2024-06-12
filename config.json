@@ -1,6 +1,6 @@
 {
     "sound": {
-        "input_device": 2
+        "input_device": 3
     },
     "macros": {
         "record_audio": "ctrl+shift+a"

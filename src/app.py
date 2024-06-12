@@ -6,6 +6,7 @@ import os
 import threading
 from config.settings import Settings
 import sounddevice as sd
+import numpy as np
 from datetime import datetime
 from PIL import Image
 import queue
@@ -26,6 +27,8 @@ class AstraApp:
         # Crear componentes de la UI
         self.create_widgets()
         self.audio_queue = queue.Queue()
+        self.testing_audio = False
+        self.audio_stream = None
 
     def create_widgets(self):
         # Menú de configuración
@@ -116,6 +119,49 @@ class AstraApp:
             settings_window.destroy()
 
         ctk.CTkButton(settings_window, text="Save", command=save_sound_settings).grid(column=0, row=1, padx=10, pady=10, columnspan=2)
+        
+        # Barra de progreso para visualizar la entrada de audio
+        self.progress_bar = ctk.CTkProgressBar(settings_window, width=300)
+        self.progress_bar.grid(column=0, row=3, padx=10, pady=10, columnspan=2)
+        self.progress_bar.set(0)
+        
+        self.test_button = ctk.CTkButton(settings_window, text="Test Input Device", command=lambda: self.toggle_test_input_device(int(device_var.get().split(":")[0])))
+        self.test_button.grid(column=0, row=2, padx=10, pady=10, columnspan=2)
+
+    def toggle_test_input_device(self, device_index):
+        if not self.testing_audio:
+            self.start_test_input_device(device_index)
+        else:
+            self.stop_test_input_device()
+
+    def start_test_input_device(self, device_index):
+        self.testing_audio = True
+        self.test_button.configure(text="Stop Test", fg_color="red")
+        self.audio_test_thread = threading.Thread(target=self.test_input_device, args=(device_index,))
+        self.audio_test_thread.start()
+
+    def stop_test_input_device(self):
+        self.testing_audio = False
+        self.test_button.configure(text="Test Input Device", fg_color="green")
+        if self.audio_stream:
+            self.audio_stream.stop()
+            self.audio_stream.close()
+        self.progress_bar.set(0)
+
+    def test_input_device(self, device_index):
+        def audio_callback(indata, frames, time, status):
+            if status:
+                print(status)
+            volume_norm = np.linalg.norm(indata) * 10
+            self.progress_bar.set(volume_norm / 100)  # Actualizar la barra de progreso en función del volumen
+
+        try:
+            with sd.InputStream(device=device_index, callback=audio_callback, channels=1, samplerate=44100) as stream:
+                self.audio_stream = stream
+                while self.testing_audio:
+                    sd.sleep(100)
+        except Exception as e:
+            print(f"Error al abrir el dispositivo de audio: {e}")
 
     def open_macros_settings(self):
         settings_window = ctk.CTkToplevel(self.root)

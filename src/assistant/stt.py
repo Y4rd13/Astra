@@ -2,9 +2,11 @@ import numpy as np
 import speech_recognition as sr
 import whisper
 import torch
+import logging
 from queue import Queue
 from datetime import datetime
-from time import sleep, time
+from time import sleep
+logger = logging.getLogger(__name__)
 
 class SpeechToText:
     """
@@ -67,7 +69,7 @@ class SpeechToText:
         self.model = model_name
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.audio_model = whisper.load_model(self.model, device=self.device)
-        print(f'Device model: {self.audio_model.device}')
+        logger.info(f"Device model: {self.audio_model.device}, model: {model_name}, device index: {device_index}")
         
         with self.source as s:
             self.recorder.adjust_for_ambient_noise(s)
@@ -79,7 +81,7 @@ class SpeechToText:
         self.data_queue.put(data)
 
     def listen_for_activation(self):
-        print("Listening for activation...")
+        logger.info("Listening for activation...")
         combined_audio = []
         phrase_start_time = None
 
@@ -100,33 +102,21 @@ class SpeechToText:
                     sleep(0.25)
                     continue
 
-                # If the phrase timeout is reached, process the combined audio
                 if (now - phrase_start_time).total_seconds() >= self.phrase_timeout:
+                    logger.info("If the phrase timeout is reached, process the combined audio")
                     audio_combined_np = np.frombuffer(b''.join(combined_audio), dtype=np.int16).astype(np.float32) / 32768.0
                     result = self.audio_model.transcribe(audio_combined_np, fp16=torch.cuda.is_available())
                     text = result['text'].strip()
                     
                     self.transcription.append(text)
-
-                    end_time = time()
-                    response_time = end_time - phrase_start_time.timestamp()
-                    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    print(f"[{current_time}][Message: {text}] (Response time: {response_time:.2f} seconds)")
-
                     return text
             else:
                 sleep(0.25)
                 if phrase_start_time and (datetime.utcnow() - phrase_start_time).total_seconds() >= self.phrase_timeout:
-                    # Process the combined audio if the phrase timeout is reached
+                    logger.info("Process the combined audio if the phrase timeout is reached")
                     audio_combined_np = np.frombuffer(b''.join(combined_audio), dtype=np.int16).astype(np.float32) / 32768.0
                     result = self.audio_model.transcribe(audio_combined_np, fp16=torch.cuda.is_available())
                     text = result['text'].strip()
 
                     self.transcription.append(text)
-
-                    end_time = time()
-                    response_time = end_time - phrase_start_time.timestamp()
-                    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    print(f"[{current_time}][Message: {text}] (Response time: {response_time:.2f} seconds)")
-
                     return text

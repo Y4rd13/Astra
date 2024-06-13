@@ -1,13 +1,12 @@
-import keyboard
-import time
 import json
-from datetime import datetime
+import logging
 from openai import OpenAI
 from .stt import SpeechToText
 from .tts import TextToSpeech
 from .vision import Vision
 from .typer import Typer
 from utils.constants import request_payload
+logger = logging.getLogger(__name__)
 
 class Assistant:
     def __init__(self, api_key, device_index, ui_callback=None, settings=None):
@@ -24,15 +23,11 @@ class Assistant:
         try:
             # Define the prompt for the analyze_image and type_text functions
             request_params = request_payload(query)
-            
-            start_time = time.time()
             response = self.client.chat.completions.create(**request_params)
-            response_time = time.time() - start_time
-
-            return response, response_time
+            return response
         except Exception as e:
-            print(f"Error obtaining response from GPT-4o: {e}")
-            return None, None
+            logger.error(f"Error obtaining response from GPT-4o: {e}")
+            return None
 
     def handle_function_call(self, function_call, command):
         function_name = function_call.name
@@ -53,7 +48,7 @@ class Assistant:
         else:
             image = self.vision.latest_camera_capture
         query_from_image64 = self.vision.analyze_image(image, command)
-        response_image, _ = self.ask_gpt(query_from_image64)
+        response_image = self.ask_gpt(query_from_image64)
         if response_image and response_image.choices[0].message.content:
             description = response_image.choices[0].message.content
             self.tts.speak(description)
@@ -71,11 +66,9 @@ class Assistant:
 
     def process_command(self, command):
         self.update_ui("User", command)
-        response, response_time = self.ask_gpt(command)
+        response = self.ask_gpt(command)
         if response:
             message = response.choices[0].message
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            print(f'[{timestamp}][Message: {command}] (Response time: {response_time:.2f} seconds)')
 
             if message.content:
                 self.tts.speak(message.content)
@@ -101,11 +94,3 @@ class Assistant:
     def update_ui(self, sender, message):
         if self.ui_callback:
             self.ui_callback(sender, message)
-
-    def run(self):
-        self.tts.speak("Hello, I'm Astra. How can I help you today?")
-        keyboard.add_hotkey('ctrl+shift+a', self.start_recording)
-        try:
-            keyboard.wait('esc')
-        except KeyboardInterrupt:
-            print("Goodbye!")

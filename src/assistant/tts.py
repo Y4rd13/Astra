@@ -2,6 +2,8 @@ import os
 from openai import OpenAI
 import pygame
 import tempfile
+import logging
+logger = logging.getLogger(__name__)
 
 class TextToSpeech:
     def __init__(self, api_key, model="tts-1", voice="nova"):
@@ -43,7 +45,6 @@ class TextToSpeech:
             try:
                 os.remove(temp_audio_path)
             except Exception as e:
-                print(f"Error trying to remove temp audio file: {e}")
-                print(f"Audio path: {temp_audio_path}")
+                logger.error(f"Error trying to remove temp audio file {temp_audio_path}: {e}")
         except Exception as e:
-            print(f"Error while generating audio: {e}")
+            logger.error(f"Error while generating audio: {e}")

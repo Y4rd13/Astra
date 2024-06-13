@@ -68,7 +68,7 @@ class SpeechToText:
         self.source = sr.Microphone(sample_rate=16000, device_index=device_index)
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.audio_model = whisper.load_model(model_name, device=self.device)
-        logger.info(f"Device model: {self.audio_model.device}, model: {model_name}, device index: {device_index}")
+        logger.info(f"Device Model: {self.audio_model.device} - Whisper Model: {model_name} - Device Index: {device_index}")
         
         with self.source as s:
             self.recorder.adjust_for_ambient_noise(s)

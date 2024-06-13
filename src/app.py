@@ -17,7 +17,6 @@ from utils.app_utils import center_window_to_display
 from config.settings import Settings
 
 
-
 class AstraApp:
     def __init__(self, root):
         self.root = root

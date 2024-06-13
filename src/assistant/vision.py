@@ -23,33 +23,33 @@ class Vision:
         self.camera_thread.join()
 
     def stream_screen(self):
-        print("Iniciando captura de pantalla...")
+        print("Starting screen stream...")
         while self.running:
             screen = ImageGrab.grab()
-            screen_np = np.array(screen)  # Convertir a un array numpy para procesamiento
-            self.latest_screen_capture = screen_np  # Guardar la última captura
+            screen_np = np.array(screen)  # Convert to a numpy array for processing
+            self.latest_screen_capture = screen_np  # Save the latest capture
 
     def stream_camera(self):
         cap = cv2.VideoCapture(0)
-        print("Iniciando cámara...")
+        print("Starting camera stream...")
         while self.running:
             ret, frame = cap.read()
             if ret:
                 frame_np = np.array(frame)
-                self.latest_camera_capture = frame_np  # Guardar el último frame
+                self.latest_camera_capture = frame_np  # Save the latest frame
         cap.release()
 
     def convert_to_base64(self, image_array):
-        """Convierte una imagen numpy array a base64 string para análisis."""
+        """Convert a numpy array image to base64 string for analysis."""
         _, buffer = cv2.imencode('.jpg', image_array)
         image_base64 = base64.b64encode(buffer).decode('utf-8')
         return image_base64
 
     def analyze_image(self, image_array, command):
-        """Envía la imagen a GPT-4o para obtener una descripción."""
-        print("Analizando imagen...")
+        """Send the image to GPT-4o for a description."""
+        print("Analyzing image...")
         image_base64 = self.convert_to_base64(image_array)
-        return  [
+        return [
             {"type": "text", "text": command},
             {"type": "image_url", "image_url": {
                 "url": f"data:image/jpeg;base64,{image_base64}",

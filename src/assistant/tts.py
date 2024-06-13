@@ -11,12 +11,11 @@ class TextToSpeech:
         self.voice = voice
         self.model = model
         
-        # Inicializar pygame mixer
+        # Initialize pygame mixer
         pygame.mixer.init()
 
     def speak(self, text):
-        # Generar audio hablado a partir de texto
-        print(f"Generando audio para: {text}")
+        # Generate spoken audio from text
         try:
             response = self.client.audio.speech.create(
                 model=self.model,
@@ -24,32 +23,29 @@ class TextToSpeech:
                 input=text
             )
             
-            # Crear un archivo temporal para el audio
+            # Create a temporary file for the audio
             with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as temp_audio_file:
                 response.stream_to_file(temp_audio_file.name)
                 temp_audio_path = temp_audio_file.name
             
-            # Reproducir el archivo de audio usando pygame
-            pygame.mixer.init()  # Asegúrate de que el mixer esté inicializado
+            # Play the audio file using pygame
+            pygame.mixer.init()  # Ensure the mixer is initialized
             pygame.mixer.music.load(temp_audio_path)
             pygame.mixer.music.play()
             
-            # Esperar hasta que termine la reproducción
+            # Wait until playback is finished
             while pygame.mixer.music.get_busy():
                 pygame.time.Clock().tick(10)
             
-            # Detener y cerrar el mixer de pygame para liberar el archivo
-            print("Playback finished")
+            # Stop and quit the pygame mixer to free the file
             pygame.mixer.music.stop()
-            print("Stopping mixer")
             pygame.mixer.quit()
-            print("Mixer stopped")
 
-            # Eliminar el archivo temporal después de la reproducción
+            # Remove the temporary file after playback
             try:
                 os.remove(temp_audio_path)
             except Exception as e:
-                print(f"Error al eliminar el archivo temporal: {e}")
-                print(f"Ruta del archivo temporal: {temp_audio_path}")
+                print(f"Error trying to remove temp audio file: {e}")
+                print(f"Audio path: {temp_audio_path}")
         except Exception as e:
-            print(f"Error al generar el audio: {e}")
+            print(f"Error while generating audio: {e}")

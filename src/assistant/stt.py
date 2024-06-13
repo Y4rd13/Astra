@@ -73,14 +73,13 @@ class SpeechToText:
             self.recorder.adjust_for_ambient_noise(s)
         
         self.recorder.listen_in_background(self.source, self.record_callback, phrase_time_limit=self.record_timeout)
-        print("Model loaded and microphone ready.")
 
     def record_callback(self, recognizer, audio):
         data = audio.get_raw_data()
         self.data_queue.put(data)
 
     def listen_for_activation(self):
-        print("Escuchando... (presiona Ctrl+C para terminar)")
+        print("Listening for activation...")
         combined_audio = []
         phrase_start_time = None
 
@@ -112,7 +111,7 @@ class SpeechToText:
                     end_time = time()
                     response_time = end_time - phrase_start_time.timestamp()
                     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    print(f"[{current_time}][Mensaje: {text}] (Tiempo de respuesta: {response_time:.2f} segundos)")
+                    print(f"[{current_time}][Message: {text}] (Response time: {response_time:.2f} seconds)")
 
                     return text
             else:
@@ -128,7 +127,7 @@ class SpeechToText:
                     end_time = time()
                     response_time = end_time - phrase_start_time.timestamp()
                     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    print(f"[{current_time}][Mensaje: {text}] (Tiempo de respuesta: {response_time:.2f} segundos)")
+                    print(f"[{current_time}][Message: {text}] (Response time: {response_time:.2f} seconds)")
 
                     return text
 

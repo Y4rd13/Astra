@@ -7,13 +7,13 @@ class Typer:
 
     def type_text(self, text):
         """
-        Escribe el texto proporcionado utilizando el teclado.
+        Types the provided text using the keyboard.
         """
         keyboard.write(text)
 
     def parse_code(self, message):
         """
-        Parsea el mensaje para extraer el código entre delimitadores de bloque de código.
+        Parses the message to extract code between code block delimiters.
         """
         code_blocks = re.findall(r'```(?:\w+)?\n(.*?)```', message, re.DOTALL)
         code = "\n\n".join(code_blocks)
@@ -22,7 +22,7 @@ class Typer:
 
     def type_code(self, message):
         """
-        Escribe el código proporcionado en la IDLE o cualquier editor de texto.
+        Types the provided code in IDLE or any text editor.
         """
         code, explanation = self.parse_code(message)
         if code:

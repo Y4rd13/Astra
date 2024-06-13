@@ -95,12 +95,12 @@ class SpeechToText:
 
                 audio_np = np.frombuffer(audio_data, dtype=np.int16).astype(np.float32) / 32768.0
 
-                # Verificar la longitud del audio para asegurarse de que es razonable
-                if len(audio_np) < 16000:  # Menos de un segundo de audio
+                # Check the length of the audio to ensure it is reasonable
+                if len(audio_np) < 16000:  # Less than one second of audio
                     sleep(0.25)
                     continue
 
-                # Si se alcanza el tiempo de espera de la frase, procesar el audio combinado
+                # If the phrase timeout is reached, process the combined audio
                 if (now - phrase_start_time).total_seconds() >= self.phrase_timeout:
                     audio_combined_np = np.frombuffer(b''.join(combined_audio), dtype=np.int16).astype(np.float32) / 32768.0
                     result = self.audio_model.transcribe(audio_combined_np, fp16=torch.cuda.is_available())
@@ -117,7 +117,7 @@ class SpeechToText:
             else:
                 sleep(0.25)
                 if phrase_start_time and (datetime.utcnow() - phrase_start_time).total_seconds() >= self.phrase_timeout:
-                    # Procesar el audio combinado si se alcanza el tiempo de espera de la frase
+                    # Process the combined audio if the phrase timeout is reached
                     audio_combined_np = np.frombuffer(b''.join(combined_audio), dtype=np.int16).astype(np.float32) / 32768.0
                     result = self.audio_model.transcribe(audio_combined_np, fp16=torch.cuda.is_available())
                     text = result['text'].strip()

@@ -1,7 +1,5 @@
 import os
 from openai import OpenAI
-from pathlib import Path
-from pydub import AudioSegment
 import pygame
 import tempfile
 

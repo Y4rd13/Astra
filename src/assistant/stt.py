@@ -3,7 +3,7 @@ import speech_recognition as sr
 import whisper
 import torch
 from queue import Queue
-from datetime import datetime, timedelta
+from datetime import datetime
 from time import sleep, time
 
 class SpeechToText:

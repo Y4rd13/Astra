@@ -1,23 +1,16 @@
 import tkinter as tk
 import customtkinter as ctk
-from assistant.core import Assistant
-from dotenv import load_dotenv
 import os
+from dotenv import load_dotenv
+import queue
 import threading
-from config.settings import Settings
 import sounddevice as sd
 import numpy as np
-from datetime import datetime
 from PIL import Image
-import queue
-
-def center_window_to_display(window, width, height, scale_factor=1.0):
-    """Centers the window to the main display/monitor"""
-    screen_width = window.winfo_screenwidth()
-    screen_height = window.winfo_screenheight()
-    x = int(((screen_width / 2) - (width / 2)) * scale_factor)
-    y = int(((screen_height / 1.5) - (height / 1.5)) * scale_factor)
-    return f"{width}x{height}+{x}+{y}"
+from datetime import datetime
+from assistant.core import Assistant
+from utils.app_utils import center_window_to_display
+from config.settings import Settings
 
 class AstraApp:
     def __init__(self, root):
@@ -25,7 +18,7 @@ class AstraApp:
         self.root.title("Astra Assistant")
         self.root.geometry(center_window_to_display(self.root, 800, 600, self.root._get_window_scaling()))
 
-        load_dotenv()  # Load environment variables from .env file
+        load_dotenv()
         api_key = os.getenv('OPENAI_API_KEY')
 
         # Create an instance of the assistant
@@ -238,7 +231,7 @@ class AstraApp:
     def append_message(self, sender, message):
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.text_area.insert(tk.END, f"{timestamp} [{sender}]: {message}\n")
-        self.text_area.yview(tk.END)  # Automatically scroll to the end of the text
+        self.text_area.yview(tk.END)
 
 def main():
     root = ctk.CTk()

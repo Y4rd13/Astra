@@ -50,7 +50,7 @@ class SpeechToText:
         Loaded Whisper model specified by model_name, set to run on GPU if available, otherwise CPU.
 
     """
-    def __init__(self, model_name="medium", device_index=None, energy_threshold=1000, record_timeout=3, phrase_timeout=3):
+    def __init__(self, model_name="medium", device_index=None, energy_threshold=1000, record_timeout=6, phrase_timeout=6):
         self.energy_threshold = energy_threshold
         self.record_timeout = record_timeout
         self.phrase_timeout = phrase_timeout
@@ -86,6 +86,7 @@ class SpeechToText:
             if not self.data_queue.empty():
                 phrase_complete = False
                 if hasattr(self, 'phrase_time') and now - self.phrase_time > timedelta(seconds=self.phrase_timeout):
+                    print(f"Phrase timeout reached: {self.phrase_timeout} seconds. Ending phrase.")
                     phrase_complete = True
                 self.phrase_time = now
 

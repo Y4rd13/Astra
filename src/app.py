@@ -11,57 +11,65 @@ from datetime import datetime
 from PIL import Image
 import queue
 
+def center_window_to_display(window, width, height, scale_factor=1.0):
+    """Centers the window to the main display/monitor"""
+    screen_width = window.winfo_screenwidth()
+    screen_height = window.winfo_screenheight()
+    x = int(((screen_width / 2) - (width / 2)) * scale_factor)
+    y = int(((screen_height / 1.5) - (height / 1.5)) * scale_factor)
+    return f"{width}x{height}+{x}+{y}"
+
 class AstraApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Astra Assistant")
-        self.root.geometry("800x600")
+        self.root.geometry(center_window_to_display(self.root, 800, 600, self.root._get_window_scaling()))
 
-        load_dotenv()  # Carga las variables de entorno del archivo .env
+        load_dotenv()  # Load environment variables from .env file
         api_key = os.getenv('OPENAI_API_KEY')
 
-        # Crear una instancia del asistente
+        # Create an instance of the assistant
         self.settings = Settings()
         self.astra = Assistant(api_key=api_key, device_index=self.settings.get_input_device(), ui_callback=self.append_message, settings=self.settings)
 
-        # Crear componentes de la UI
+        # Create UI components
         self.create_widgets()
         self.audio_queue = queue.Queue()
         self.testing_audio = False
         self.audio_stream = None
 
     def create_widgets(self):
-        # Área de texto para mostrar mensajes
+        # Text area to display messages
         self.text_area = ctk.CTkTextbox(self.root, width=600, height=200, wrap=tk.WORD)
         self.text_area.grid(column=0, row=0, padx=20, pady=20, columnspan=3)
 
-        # Cuadro de texto para entrada del usuario
+        # Text box for user input
         self.user_input = ctk.CTkTextbox(self.root, width=600, height=200, wrap=tk.WORD)
         self.user_input.grid(column=0, row=1, padx=20, pady=10, columnspan=3)
 
-        # Cargar imagen para el botón de envío
+        # Load image for the send button
         self.image_send = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "src", "img", "send.png")))
 
-        # Botón para enviar texto
+        # Button to send text
         self.send_button = ctk.CTkButton(self.root, text="", command=self.send_text, width=50, height=50, image=self.image_send, fg_color="transparent")
         self.send_button.grid(column=2, row=2, padx=20, pady=10)
 
-        # Cargar imágenes para el botón de grabación
+        # Load images for the recording button
         self.image_record = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "src", "img", "pause-play-00.png")))
         self.image_stop = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "src", "img", "pause-play-01.png")))
 
-        # Botón central para grabar audio
+        # Central button to record audio
         self.record_button = ctk.CTkButton(self.root, text="", command=self.toggle_recording, width=50, height=50, image=self.image_record, fg_color="transparent")
         self.record_button.grid(column=1, row=2, padx=20, pady=20)
 
-        # Cargar imagen para el botón de configuración
+        # Load image for the settings button
         self.image_settings = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "src", "img", "settings.png")))
 
-        # Botón para abrir configuración
+        # Button to open settings
         self.settings_button = ctk.CTkButton(self.root, text="", command=self.open_settings, width=50, height=50, image=self.image_settings, fg_color="transparent")
         self.settings_button.grid(column=0, row=2, padx=20, pady=10)
 
-        # Variable para controlar la grabación
+        # Variable to control recording
         self.recording = False
 
     def toggle_recording(self):
@@ -102,11 +110,11 @@ class AstraApp:
     def open_settings(self):
         settings_window = ctk.CTkToplevel(self.root)
         settings_window.title("Settings")
-        settings_window.geometry("600x400")
+        settings_window.geometry(center_window_to_display(settings_window, 600, 400, settings_window._get_window_scaling()))
         
-        # Hacer que la ventana de configuración sea siempre la más alta
+        # Make the settings window always on top
         settings_window.attributes("-topmost", True)
-        # Asegurar que la ventana de configuración tenga el foco
+        # Ensure the settings window has focus
         settings_window.focus_force()
 
         tabview = ctk.CTkTabview(settings_window, width=580, height=360)
@@ -172,7 +180,7 @@ class AstraApp:
             if status:
                 print(status)
             volume_norm = np.linalg.norm(indata) * 10
-            self.progress_bar.set(volume_norm / 100)  # Actualizar la barra de progreso en función del volumen
+            self.progress_bar.set(volume_norm / 100)  # Update the progress bar based on volume
 
         try:
             with sd.InputStream(device=device_index, callback=audio_callback, channels=1, samplerate=44100) as stream:
@@ -180,7 +188,7 @@ class AstraApp:
                 while self.testing_audio:
                     sd.sleep(100)
         except Exception as e:
-            print(f"Error al abrir el dispositivo de audio: {e}")
+            print(f"Error opening audio device: {e}")
 
     def create_macros_settings(self, tab):
         tab.grid_columnconfigure(0, weight=1)
@@ -230,7 +238,7 @@ class AstraApp:
     def append_message(self, sender, message):
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.text_area.insert(tk.END, f"{timestamp} [{sender}]: {message}\n")
-        self.text_area.yview(tk.END)  # Desplazar automáticamente al final del texto
+        self.text_area.yview(tk.END)  # Automatically scroll to the end of the text
 
 def main():
     root = ctk.CTk()

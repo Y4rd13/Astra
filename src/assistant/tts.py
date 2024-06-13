@@ -10,6 +10,7 @@ class TextToSpeech:
         self.client = OpenAI(api_key=api_key)
         self.voice = voice
         self.model = model
+        logger.info(f"Model: {model} - Voice: {voice}")
         
         # Initialize pygame mixer
         pygame.mixer.init()
@@ -44,6 +45,7 @@ class TextToSpeech:
             # Remove the temporary file after playback
             try:
                 os.remove(temp_audio_path)
+                logger.info(f"Temp audio file removed: {temp_audio_path}")
             except Exception as e:
                 logger.error(f"Error trying to remove temp audio file {temp_audio_path}: {e}")
         except Exception as e:

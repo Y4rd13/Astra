@@ -6,6 +6,7 @@ import logging
 from queue import Queue
 from datetime import datetime
 from time import sleep
+
 logger = logging.getLogger(__name__)
 
 class SpeechToText:
@@ -50,7 +51,6 @@ class SpeechToText:
 
     audio_model : whisper.Model
         Loaded Whisper model specified by model_name, set to run on GPU if available, otherwise CPU.
-
     """
     def __init__(self, model_name="medium", device_index=None, energy_threshold=1000, record_timeout=6, phrase_timeout=6):
         self.energy_threshold = energy_threshold
@@ -66,9 +66,8 @@ class SpeechToText:
         
         # Microphone configuration
         self.source = sr.Microphone(sample_rate=16000, device_index=device_index)
-        self.model = model_name
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.audio_model = whisper.load_model(self.model, device=self.device)
+        self.audio_model = whisper.load_model(model_name, device=self.device)
         logger.info(f"Device model: {self.audio_model.device}, model: {model_name}, device index: {device_index}")
         
         with self.source as s:
@@ -86,37 +85,35 @@ class SpeechToText:
         phrase_start_time = None
 
         while True:
-            now = datetime.utcnow()
             if not self.data_queue.empty():
                 if phrase_start_time is None:
-                    phrase_start_time = now
+                    phrase_start_time = datetime.utcnow()
 
-                audio_data = b''.join(self.data_queue.queue)
-                self.data_queue.queue.clear()
-                combined_audio.append(audio_data)
-
-                audio_np = np.frombuffer(audio_data, dtype=np.int16).astype(np.float32) / 32768.0
-
-                # Check the length of the audio to ensure it is reasonable
-                if len(audio_np) < 16000:  # Less than one second of audio
+                combined_audio.append(self._get_audio_data())
+                
+                if len(combined_audio[-1]) < 16000:  # Less than one second of audio
                     sleep(0.25)
                     continue
 
-                if (now - phrase_start_time).total_seconds() >= self.phrase_timeout:
-                    logger.info("If the phrase timeout is reached, process the combined audio")
-                    audio_combined_np = np.frombuffer(b''.join(combined_audio), dtype=np.int16).astype(np.float32) / 32768.0
-                    result = self.audio_model.transcribe(audio_combined_np, fp16=torch.cuda.is_available())
-                    text = result['text'].strip()
-                    
-                    self.transcription.append(text)
-                    return text
+                if self._timeout_reached(phrase_start_time):
+                    return self._process_audio_combined(combined_audio)
             else:
                 sleep(0.25)
-                if phrase_start_time and (datetime.utcnow() - phrase_start_time).total_seconds() >= self.phrase_timeout:
-                    logger.info("Process the combined audio if the phrase timeout is reached")
-                    audio_combined_np = np.frombuffer(b''.join(combined_audio), dtype=np.int16).astype(np.float32) / 32768.0
-                    result = self.audio_model.transcribe(audio_combined_np, fp16=torch.cuda.is_available())
-                    text = result['text'].strip()
+                if phrase_start_time and self._timeout_reached(phrase_start_time):
+                    return self._process_audio_combined(combined_audio)
 
-                    self.transcription.append(text)
-                    return text
+    def _get_audio_data(self):
+        audio_data = b''.join(self.data_queue.queue)
+        self.data_queue.queue.clear()
+        return audio_data
+
+    def _timeout_reached(self, phrase_start_time):
+        return (datetime.utcnow() - phrase_start_time).total_seconds() >= self.phrase_timeout
+
+    def _process_audio_combined(self, combined_audio):
+        logger.info("Processing combined audio due to timeout")
+        audio_combined_np = np.frombuffer(b''.join(combined_audio), dtype=np.int16).astype(np.float32) / 32768.0
+        result = self.audio_model.transcribe(audio_combined_np, fp16=torch.cuda.is_available())
+        text = result['text'].strip()
+        self.transcription.append(text)
+        return text

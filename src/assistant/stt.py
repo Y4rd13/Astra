@@ -130,17 +130,3 @@ class SpeechToText:
                     print(f"[{current_time}][Message: {text}] (Response time: {response_time:.2f} seconds)")
 
                     return text
-
-    def get_transcription(self):
-        return '\n'.join(self.transcription)
-
-if __name__ == "__main__":
-    stt = SpeechToText(model_name="base", device_index=3)
-    print("Start speaking now...")
-    try:
-        while True:
-            text = stt.listen_for_activation()
-            print("Heard:", text)
-    except KeyboardInterrupt:
-        print("Exiting...")
-        print("Transcription:", stt.get_transcription())

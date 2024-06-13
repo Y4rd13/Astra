@@ -11,17 +11,17 @@ from .typer import Typer
 class Assistant:
     def __init__(self, api_key, device_index, ui_callback=None, settings=None):
         self.client = OpenAI(api_key=api_key)
-        self.ui_callback = ui_callback  # Callback para actualizar la UI
+        self.ui_callback = ui_callback  # Callback to update the UI
         self.settings = settings
         self.stt = SpeechToText(model_name=self.settings.get_stt_model(), device_index=device_index)
         self.tts = TextToSpeech(api_key, model=self.settings.get_tts_model(), voice=self.settings.get_tts_voice())
         self.vision = Vision()
         self.typer = Typer()
-        self.vision.start()  # Iniciar captura continua en threads separados
+        self.vision.start()  # Start continuous capture in separate threads
 
     def ask_gpt(self, query):
         try:
-            # Define el prompt para la función analyze_image y type_text
+            # Define the prompt for the analyze_image and type_text functions
             request_params = {
                 "model": "gpt-4o",
                 "messages": [
@@ -73,7 +73,7 @@ class Assistant:
 
             return response, response_time
         except Exception as e:
-            print(f"Error al obtener respuesta de GPT-4o: {e}")
+            print(f"Error obtaining response from GPT-4o: {e}")
             return None, None
 
     def handle_function_call(self, function_call, command):
@@ -85,8 +85,8 @@ class Assistant:
         elif function_name == "type_text":
             self.handle_type_text(params)
         else:
-            self.tts.speak("No puedo realizar esa acción.")
-            self.update_ui("Astra", "No puedo realizar esa acción.")
+            self.tts.speak("I can't perform that action.")
+            self.update_ui("Astra", "I can't perform that action.")
 
     def handle_analyze_image(self, params, command):
         source = params["source"]
@@ -101,8 +101,8 @@ class Assistant:
             self.tts.speak(description)
             self.update_ui("Astra", description)
         else:
-            self.tts.speak("Lo siento, no pude analizar la imagen.")
-            self.update_ui("Astra", "Lo siento, no pude analizar la imagen.")
+            self.tts.speak("Sorry, I couldn't analyze the image.")
+            self.update_ui("Astra", "Sorry, I couldn't analyze the image.")
 
     def handle_type_text(self, params):
         text = params["text"]
@@ -117,7 +117,7 @@ class Assistant:
         if response:
             message = response.choices[0].message
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            print(f'[{timestamp}][Mensaje: {command}] (Tiempo de respuesta: {response_time:.2f} segundos)')
+            print(f'[{timestamp}][Message: {command}] (Response time: {response_time:.2f} seconds)')
 
             if message.content:
                 self.tts.speak(message.content)
@@ -130,11 +130,11 @@ class Assistant:
             elif message.function_call:
                 self.handle_function_call(message.function_call, command)
             else:
-                self.tts.speak("Lo siento, no pude procesar tu solicitud.")
-                self.update_ui("Astra", "Lo siento, no pude procesar tu solicitud.")
+                self.tts.speak("Sorry, I couldn't process your request.")
+                self.update_ui("Astra", "Sorry, I couldn't process your request.")
         else:
-            self.tts.speak("Lo siento, hubo un error al procesar tu solicitud.")
-            self.update_ui("Astra", "Lo siento, hubo un error al procesar tu solicitud.")
+            self.tts.speak("Sorry, there was an error processing your request.")
+            self.update_ui("Astra", "Sorry, there was an error processing your request.")
 
     def start_recording(self):
         command = self.stt.listen_for_activation().lower()
@@ -145,7 +145,7 @@ class Assistant:
             self.ui_callback(sender, message)
 
     def run(self):
-        self.tts.speak("Hola, soy Astra. ¿En qué puedo ayudarte hoy?")
+        self.tts.speak("Hello, I'm Astra. How can I help you today?")
         keyboard.add_hotkey('ctrl+shift+a', self.start_recording)
         try:
             keyboard.wait('esc')

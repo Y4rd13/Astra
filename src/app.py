@@ -8,9 +8,15 @@ import sounddevice as sd
 import numpy as np
 from PIL import Image
 from datetime import datetime
+import logging
+logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(name)s] [%(levelname)s] - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+logger = logging.getLogger(__name__)
+
 from assistant.core import Assistant
 from utils.app_utils import center_window_to_display
 from config.settings import Settings
+
+
 
 class AstraApp:
     def __init__(self, root):
@@ -171,7 +177,7 @@ class AstraApp:
     def test_input_device(self, device_index):
         def audio_callback(indata, frames, time, status):
             if status:
-                print(status)
+                logger.info(f'Status: {status}')
             volume_norm = np.linalg.norm(indata) * 10
             self.progress_bar.set(volume_norm / 100)  # Update the progress bar based on volume
 
@@ -181,7 +187,7 @@ class AstraApp:
                 while self.testing_audio:
                     sd.sleep(100)
         except Exception as e:
-            print(f"Error opening audio device: {e}")
+            logger.error(f"Error opening audio device: {e}")
 
     def create_macros_settings(self, tab):
         tab.grid_columnconfigure(0, weight=1)

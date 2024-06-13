@@ -1,8 +1,10 @@
 import threading
 import cv2
 import numpy as np
-from PIL import ImageGrab
 import base64
+import logging
+from PIL import ImageGrab
+logger = logging.getLogger(__name__)
 
 class Vision:
     def __init__(self):
@@ -23,7 +25,7 @@ class Vision:
         self.camera_thread.join()
 
     def stream_screen(self):
-        print("Starting screen stream...")
+        logger.info("Starting screen stream...")
         while self.running:
             screen = ImageGrab.grab()
             screen_np = np.array(screen)  # Convert to a numpy array for processing
@@ -31,7 +33,7 @@ class Vision:
 
     def stream_camera(self):
         cap = cv2.VideoCapture(0)
-        print("Starting camera stream...")
+        logger.info("Starting camera stream...")
         while self.running:
             ret, frame = cap.read()
             if ret:
@@ -47,7 +49,7 @@ class Vision:
 
     def analyze_image(self, image_array, command):
         """Send the image to GPT-4o for a description."""
-        print("Analyzing image...")
+        logger.info("Analyzing image...")
         image_base64 = self.convert_to_base64(image_array)
         return [
             {"type": "text", "text": command},

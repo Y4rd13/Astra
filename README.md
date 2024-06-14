@@ -109,11 +109,19 @@ Enjoy using **Astra Assistant**! If you encounter any issues, feel free to open 
 ---
 ## TODO
 
-1. **Fix `typer.py`**
+1. **Optimize STT**
+   - [ ] Optimize response time for STT processing.
+
+2. **Fix `typer.py`**
    - [ ] Correct the indentation issue when writing code.
    - [ ] Ensure the generated code is properly formatted.
    - [ ] Verify that writing code in different languages maintains the appropriate indentation.
 
-2. **Fix Default Macro**
+3. **UI**
+   - [ ] Add switch button to keep active screen and/or cam vision.
+   - [ ] Add a button to attach a file to the chat. (Image, audio, video, etc.)
+   - [ ] Make the chat box responsive to the window size.
+
+4. **Fix Default Macro**
    - [ ] Ensure the `ctrl+shift+a` key combination works correctly.
    - [ ] Allow customization of the macro through the settings.

@@ -88,7 +88,7 @@ class Assistant:
     def process_command(self, command):
         self.update_ui("User", command)
         response, function_call = self.ask_gpt(command)
-        print(f'Response: {response} - Function Call: {function_call}')
+        logger.info(f'Response: {response} - Function Call: {function_call}') # DEBUG
 
         if response:
             if function_call:
@@ -96,7 +96,10 @@ class Assistant:
             else:
                 self._process_message_content(response)
         else:
-            self._handle_processing_failure()
+            if function_call:
+                self.handle_function_call(function_call, command)
+            else:
+                self._handle_processing_failure()
 
     def start_recording(self):
         command = self.stt.listen_for_activation().lower()

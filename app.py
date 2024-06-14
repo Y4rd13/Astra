@@ -22,6 +22,7 @@ class AstraApp:
         self.root = root
         self.root.title("Astra Assistant")
         self.root.geometry(center_window_to_display(self.root, 800, 600, self.root._get_window_scaling()))
+        self.root.attributes('-alpha', 0.98)  # Set transparency to 98%
 
         load_dotenv()
         api_key = os.getenv('OPENAI_API_KEY')

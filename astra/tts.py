@@ -1,7 +1,6 @@
-import os
 from openai import OpenAI
-import pygame
-import tempfile
+import pyaudio
+import time
 import logging
 logger = logging.getLogger(__name__)
 
@@ -11,42 +10,21 @@ class TextToSpeech:
         self.voice = voice
         self.model = model
         logger.info(f"Model: {model} - Voice: {voice}")
-        
-        # Initialize pygame mixer
-        pygame.mixer.init()
 
     def speak(self, text):
-        # Generate spoken audio from text
-        try:
-            response = self.client.audio.speech.create(
-                model=self.model,
-                voice=self.voice,
-                input=text
-            )
-            
-            # Create a temporary file for the audio
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as temp_audio_file:
-                response.stream_to_file(temp_audio_file.name)
-                temp_audio_path = temp_audio_file.name
-            
-            # Play the audio file using pygame
-            pygame.mixer.init()  # Ensure the mixer is initialized
-            pygame.mixer.music.load(temp_audio_path)
-            pygame.mixer.music.play()
-            
-            # Wait until playback is finished
-            while pygame.mixer.music.get_busy():
-                pygame.time.Clock().tick(10)
-            
-            # Stop and quit the pygame mixer to free the file
-            pygame.mixer.music.stop()
-            pygame.mixer.quit()
+        player_stream = pyaudio.PyAudio().open(format=pyaudio.paInt16, channels=1, rate=24000, output=True)
 
-            # Remove the temporary file after playback
-            try:
-                os.remove(temp_audio_path)
-                logger.info(f"Temp audio file removed: {temp_audio_path}")
-            except Exception as e:
-                logger.error(f"Error trying to remove temp audio file {temp_audio_path}: {e}")
-        except Exception as e:
-            logger.error(f"Error while generating audio: {e}")
+        start_time = time.time()
+
+        with self.client.audio.speech.with_streaming_response.create(
+            model=self.model,
+            voice=self.voice,
+            response_format="pcm",
+            input=text
+        ) as response:
+            logger.info(f"Time to first byte: {int((time.time() - start_time) * 1000)}ms")
+            for chunk in response.iter_bytes(chunk_size=1024):
+                player_stream.write(chunk)
+
+        logger.info(f"Done in {int((time.time() - start_time) * 1000)}ms.")
+        player_stream.close()

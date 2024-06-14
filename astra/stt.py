@@ -3,6 +3,7 @@ import speech_recognition as sr
 import whisper
 import torch
 import logging
+from utils.audio_utils import play_sound
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +27,7 @@ class SpeechToText:
             logger.info("Please speak now...")
             audio = self.recorder.listen(source)
             logger.info("Recording finished, processing...")
+            play_sound("record-finished.mp3")
 
             # Convert audio to text using Whisper
             audio_data = np.frombuffer(audio.get_wav_data(), np.int16).flatten().astype(np.float32) / 32768.0

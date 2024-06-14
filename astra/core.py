@@ -88,6 +88,7 @@ class Assistant:
     def process_command(self, command):
         self.update_ui("User", command)
         response, function_call = self.ask_gpt(command)
+        print(f'Response: {response} - Function Call: {function_call}')
 
         if response:
             if function_call:

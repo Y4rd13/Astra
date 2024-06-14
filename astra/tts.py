@@ -1,4 +1,5 @@
 from openai import OpenAI
+from utils.audio_utils import play_sound
 import pyaudio
 import time
 import logging
@@ -12,6 +13,7 @@ class TextToSpeech:
         logger.info(f"Model: {model} - Voice: {voice}")
 
     def speak(self, text):
+        play_sound("message-incoming.mp3")
         player_stream = pyaudio.PyAudio().open(format=pyaudio.paInt16, channels=1, rate=24000, output=True)
 
         start_time = time.time()

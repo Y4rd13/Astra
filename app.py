@@ -12,7 +12,7 @@ import logging
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(name)s] [%(levelname)s] - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 logger = logging.getLogger(__name__)
 
-from assistant.core import Assistant
+from astra.core import Assistant
 from utils.app_utils import center_window_to_display
 from config.settings import Settings
 
@@ -46,22 +46,22 @@ class AstraApp:
         self.user_input.grid(column=0, row=1, padx=20, pady=10, columnspan=3)
 
         # Load image for the send button
-        self.image_send = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "src", "img", "send.png")))
+        self.image_send = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "img", "send.png")))
 
         # Button to send text
         self.send_button = ctk.CTkButton(self.root, text="", command=self.send_text, width=50, height=50, image=self.image_send, fg_color="transparent")
         self.send_button.grid(column=2, row=2, padx=20, pady=10)
 
         # Load images for the recording button
-        self.image_record = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "src", "img", "pause-play-00.png")))
-        self.image_stop = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "src", "img", "pause-play-01.png")))
+        self.image_record = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "img", "pause-play-00.png")))
+        self.image_stop = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "img", "pause-play-01.png")))
 
         # Central button to record audio
         self.record_button = ctk.CTkButton(self.root, text="", command=self.toggle_recording, width=50, height=50, image=self.image_record, fg_color="transparent")
         self.record_button.grid(column=1, row=2, padx=20, pady=20)
 
         # Load image for the settings button
-        self.image_settings = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "src", "img", "settings.png")))
+        self.image_settings = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "img", "settings.png")))
 
         # Button to open settings
         self.settings_button = ctk.CTkButton(self.root, text="", command=self.open_settings, width=50, height=50, image=self.image_settings, fg_color="transparent")

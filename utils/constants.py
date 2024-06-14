@@ -1,7 +1,6 @@
 def request_payload(query: str) -> dict:
     return  {
                 "model": "gpt-4o",
-                "stream": True,
                 "messages": [
                     {
                         "role": "system",

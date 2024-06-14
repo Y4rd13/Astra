@@ -38,13 +38,21 @@ class AstraApp:
         self.audio_stream = None
 
     def create_widgets(self):
+        # Configure grid layout for the root window to make it responsive
+        self.root.grid_columnconfigure(0, weight=1)
+        self.root.grid_columnconfigure(1, weight=1)
+        self.root.grid_columnconfigure(2, weight=1)
+        self.root.grid_rowconfigure(0, weight=1)
+        self.root.grid_rowconfigure(1, weight=1)
+        self.root.grid_rowconfigure(2, weight=1)
+
         # Text area to display messages
-        self.text_area = ctk.CTkTextbox(self.root, width=600, height=200, wrap=tk.WORD)
-        self.text_area.grid(column=0, row=0, padx=20, pady=20, columnspan=3)
+        self.text_area = ctk.CTkTextbox(self.root, wrap=tk.WORD)
+        self.text_area.grid(column=0, row=0, padx=20, pady=20, columnspan=3, sticky="nsew")
 
         # Text box for user input
-        self.user_input = ctk.CTkTextbox(self.root, width=600, height=200, wrap=tk.WORD)
-        self.user_input.grid(column=0, row=1, padx=20, pady=10, columnspan=3)
+        self.user_input = ctk.CTkTextbox(self.root, wrap=tk.WORD)
+        self.user_input.grid(column=0, row=1, padx=20, pady=10, columnspan=3, sticky="nsew")
 
         # Load image for the send button
         self.image_send = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "assets", "img", "send.png")))
@@ -110,6 +118,7 @@ class AstraApp:
         settings_window = ctk.CTkToplevel(self.root)
         settings_window.title("Settings")
         settings_window.geometry(center_window_to_display(settings_window, 600, 400, settings_window._get_window_scaling()))
+        settings_window.attributes('-alpha', 0.98)
         
         # Make the settings window always on top
         settings_window.attributes("-topmost", True)

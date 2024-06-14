@@ -128,6 +128,7 @@ Enjoy using **Astra Assistant**! If you encounter any issues, feel free to open 
    - [ ] Add a button to clear the chat history. 
    - [ ] Add icons to the buttons.
    - [x] Make overlay widget.
+   - [x] Add transparency
 
 5. **Fix Default Macro**
    - [ ] Ensure the `ctrl+shift+a` key combination works correctly.

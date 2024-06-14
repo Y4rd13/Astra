@@ -12,13 +12,13 @@ logger = logging.getLogger(__name__)
 class Assistant:
     def __init__(self, api_key, device_index, ui_callback=None, settings=None):
         self.client = OpenAI(api_key=api_key)
-        self.ui_callback = ui_callback  # Callback para actualizar la UI
+        self.ui_callback = ui_callback  # Callback to update the UI
         self.settings = settings or {}
         self.stt = SpeechToText(model_name=self.settings.get_stt_model(), device_index=device_index)
         self.tts = TextToSpeech(api_key, model=self.settings.get_tts_model(), voice=self.settings.get_tts_voice())
         self.vision = Vision()
         self.typer = Typer()
-        self.vision.start()  # Iniciar captura continua en hilos separados
+        self.vision.start()  # Start continuous capture in separate threads
 
     def ask_gpt(self, query):
         try:
@@ -31,10 +31,10 @@ class Assistant:
                     collected_messages.append(chunk_message)
                     print(chunk_message, end='', flush=True)
             response_text = ''.join(collected_messages)
-            logger.info(f"Respuesta completa de GPT-4o: {response_text}")
+            logger.info(f"Complete response from GPT-4o: {response_text}")
             return response_text
         except Exception as e:
-            logger.error(f"Error obteniendo respuesta de GPT-4: {e}")
+            logger.error(f"Error obtaining response from GPT-4: {e}")
             return None
 
     def handle_function_call(self, function_call, command):
@@ -74,8 +74,6 @@ class Assistant:
     def process_command(self, command):
         self.update_ui("User", command)
         response = self.ask_gpt(command)
-        print(f'Response: {response}')
-
         if response:
             self._process_message_content(response)
         else:
@@ -105,13 +103,13 @@ class Assistant:
                 self.update_ui("Astra", explanation)
 
     def _handle_unknown_function(self):
-        self.tts.speak("No puedo realizar esa acción.")
-        self.update_ui("Astra", "No puedo realizar esa acción.")
+        self.tts.speak("I can't perform that action.")
+        self.update_ui("Astra", "I can't perform that action.")
 
     def _handle_analysis_failure(self):
-        self.tts.speak("Lo siento, no pude analizar la imagen.")
-        self.update_ui("Astra", "Lo siento, no pude analizar la imagen.")
+        self.tts.speak("Sorry, I couldn't analyze the image.")
+        self.update_ui("Astra", "Sorry, I couldn't analyze the image.")
 
     def _handle_processing_failure(self):
-        self.tts.speak("Lo siento, hubo un error al procesar tu solicitud.")
-        self.update_ui("Astra", "Lo siento, hubo un error al procesar tu solicitud.")
+        self.tts.speak("Sorry, there was an error processing your request.")
+        self.update_ui("Astra", "Sorry, there was an error processing your request.")

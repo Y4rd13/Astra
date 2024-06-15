@@ -9,6 +9,10 @@ import numpy as np
 from PIL import Image
 from datetime import datetime
 import logging
+import pystray
+from pystray import MenuItem as item
+from PIL import Image as PILImage
+
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(name)s] [%(levelname)s] - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 logger = logging.getLogger(__name__)
 
@@ -22,6 +26,7 @@ class AstraApp:
         self.root = root
         self.root.title("Astra Assistant")
         self.root.geometry(center_window_to_display(self.root, 800, 600, self.root._get_window_scaling()))
+        self.root.attributes('-alpha', 0.98)  # Set transparency to 98%
 
         load_dotenv()
         api_key = os.getenv('OPENAI_API_KEY')
@@ -36,32 +41,50 @@ class AstraApp:
         self.testing_audio = False
         self.audio_stream = None
 
+        # Track the minimized state
+        self.is_minimized = False
+
+        # Bind the window state event
+        self.root.bind("<Unmap>", self.on_minimize)
+        self.root.bind("<Map>", self.on_restore)
+
+        # Create system tray icon
+        self.create_tray_icon()
+
     def create_widgets(self):
+        # Configure grid layout for the root window to make it responsive
+        self.root.grid_columnconfigure(0, weight=1)
+        self.root.grid_columnconfigure(1, weight=1)
+        self.root.grid_columnconfigure(2, weight=1)
+        self.root.grid_rowconfigure(0, weight=1)
+        self.root.grid_rowconfigure(1, weight=1)
+        self.root.grid_rowconfigure(2, weight=1)
+
         # Text area to display messages
-        self.text_area = ctk.CTkTextbox(self.root, width=600, height=200, wrap=tk.WORD)
-        self.text_area.grid(column=0, row=0, padx=20, pady=20, columnspan=3)
+        self.text_area = ctk.CTkTextbox(self.root, wrap=tk.WORD)
+        self.text_area.grid(column=0, row=0, padx=20, pady=20, columnspan=3, sticky="nsew")
 
         # Text box for user input
-        self.user_input = ctk.CTkTextbox(self.root, width=600, height=200, wrap=tk.WORD)
-        self.user_input.grid(column=0, row=1, padx=20, pady=10, columnspan=3)
+        self.user_input = ctk.CTkTextbox(self.root, wrap=tk.WORD)
+        self.user_input.grid(column=0, row=1, padx=20, pady=10, columnspan=3, sticky="nsew")
 
         # Load image for the send button
-        self.image_send = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "img", "send.png")))
+        self.image_send = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "assets", "img", "send.png")))
 
         # Button to send text
         self.send_button = ctk.CTkButton(self.root, text="", command=self.send_text, width=50, height=50, image=self.image_send, fg_color="transparent")
         self.send_button.grid(column=2, row=2, padx=20, pady=10)
 
         # Load images for the recording button
-        self.image_record = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "img", "pause-play-00.png")))
-        self.image_stop = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "img", "pause-play-01.png")))
+        self.image_record = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "assets", "img", "pause-play-00.png")))
+        self.image_stop = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "assets", "img", "pause-play-01.png")))
 
         # Central button to record audio
         self.record_button = ctk.CTkButton(self.root, text="", command=self.toggle_recording, width=50, height=50, image=self.image_record, fg_color="transparent")
         self.record_button.grid(column=1, row=2, padx=20, pady=20)
 
         # Load image for the settings button
-        self.image_settings = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "img", "settings.png")))
+        self.image_settings = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "assets", "img", "settings.png")))
 
         # Button to open settings
         self.settings_button = ctk.CTkButton(self.root, text="", command=self.open_settings, width=50, height=50, image=self.image_settings, fg_color="transparent")
@@ -69,6 +92,57 @@ class AstraApp:
 
         # Variable to control recording
         self.recording = False
+
+        # Create overlay window
+        self.create_overlay()
+
+    def create_overlay(self):
+        self.overlay = tk.Toplevel(self.root)
+        self.overlay.geometry("100x100")
+        self.overlay.overrideredirect(True)  # Remove window decorations
+        self.overlay.attributes("-topmost", True)
+        self.overlay.attributes('-alpha', 0.9)  # 3% transparent
+        self.overlay.config(bg="black")
+
+        # Set shape to be round
+        self.overlay_canvas = tk.Canvas(self.overlay, width=100, height=100, bg="black", highlightthickness=0)
+        self.overlay_canvas.pack(fill="both", expand=True)
+        self.overlay_canvas.create_oval(0, 0, 100, 100, fill="black")
+
+        # Load images for the recording button in the overlay
+        self.overlay_image_record = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "assets", "img", "pause-play-00.png")))
+        self.overlay_image_stop = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "assets", "img", "pause-play-01.png")))
+
+        # Central button to record audio in the overlay
+        self.overlay_record_button = ctk.CTkButton(self.overlay_canvas, text="", command=self.toggle_recording, width=50, height=50, image=self.overlay_image_record, fg_color="transparent")
+        self.overlay_record_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+        self.overlay.withdraw()  # Hide the overlay initially
+
+        # Make overlay movable
+        self.overlay.bind("<Button-1>", self.start_move)
+        self.overlay.bind("<B1-Motion>", self.do_move)
+
+    def start_move(self, event):
+        self.x = event.x
+        self.y = event.y
+
+    def do_move(self, event):
+        x = self.overlay.winfo_pointerx() - self.x
+        y = self.overlay.winfo_pointery() - self.y
+        self.overlay.geometry(f"+{x}+{y}")
+
+    def on_minimize(self, event):
+        if self.root.state() == "iconic":
+            self.is_minimized = True
+            self.overlay.deiconify()  # Show the overlay
+            self.root.withdraw()  # Hide the main window
+
+    def on_restore(self, event):
+        if self.is_minimized:
+            self.is_minimized = False
+            self.overlay.withdraw()  # Hide the overlay
+            self.root.deiconify()  # Show the main window
 
     def toggle_recording(self):
         if not self.recording:
@@ -79,12 +153,14 @@ class AstraApp:
     def start_recording(self):
         self.recording = True
         self.record_button.configure(image=self.image_stop)
+        self.overlay_record_button.configure(image=self.overlay_image_stop)
         self.recording_thread = threading.Thread(target=self.record_and_process_audio)
         self.recording_thread.start()
 
     def stop_recording(self):
         self.recording = False
         self.record_button.configure(image=self.image_record)
+        self.overlay_record_button.configure(image=self.overlay_image_record)
 
     def record_and_process_audio(self):
         while self.recording:
@@ -109,6 +185,7 @@ class AstraApp:
         settings_window = ctk.CTkToplevel(self.root)
         settings_window.title("Settings")
         settings_window.geometry(center_window_to_display(settings_window, 600, 400, settings_window._get_window_scaling()))
+        settings_window.attributes('-alpha', 0.98)
         
         # Make the settings window always on top
         settings_window.attributes("-topmost", True)
@@ -184,7 +261,7 @@ class AstraApp:
             with sd.InputStream(device=device_index, callback=audio_callback, channels=1, samplerate=44100) as stream:
                 self.audio_stream = stream
                 while self.testing_audio:
-                    sd.sleep(100)
+                    sd.sleep(50)
         except Exception as e:
             logger.error(f"Error opening audio device: {e}")
 
@@ -234,9 +311,28 @@ class AstraApp:
         ctk.CTkButton(tab, text="Save", command=save_models_settings).grid(column=0, row=4, padx=10, pady=10, columnspan=2)
 
     def append_message(self, sender, message):
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        self.text_area.insert(tk.END, f"{timestamp} [{sender}]: {message}\n")
-        self.text_area.yview(tk.END)
+        def write_message():
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            self.text_area.insert(tk.END, f"{timestamp} [{sender}]: {message}\n")
+            self.text_area.yview(tk.END)
+        
+        # Run write_message function in a separate thread
+        threading.Thread(target=write_message).start()
+
+    def create_tray_icon(self):
+        image = PILImage.open(os.path.join(os.getcwd(), "assets", "img", "icon.png"))
+        menu = (item('Abrir', self.show_main_window), item('Salir', self.exit_app))
+        self.tray_icon = pystray.Icon("Astra Assistant", image, "Astra Assistant", menu)
+        threading.Thread(target=self.tray_icon.run, daemon=True).start()
+
+    def show_main_window(self):
+        self.on_restore(None)
+        self.root.deiconify()
+        self.root.state('normal')
+
+    def exit_app(self):
+        self.tray_icon.stop()
+        self.root.quit()
 
 def main():
     root = ctk.CTk()

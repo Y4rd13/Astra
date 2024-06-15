@@ -1,1 +1,1 @@
-__all__ = ["constants", "app_utils"]
+__all__ = ["constants", "app_utils", "audio_utils"]

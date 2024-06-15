@@ -23,15 +23,37 @@ class Assistant:
     def ask_gpt(self, query):
         try:
             request_params = request_payload(query)
-            response = self.client.chat.completions.create(**request_params)
-            return response
+            response = self.client.chat.completions.create(**request_params, stream=True)
+            collected_messages = []
+            function_call = None
+            function_name = None
+            function_args = ''
+            for chunk in response:
+                choice = chunk.choices[0].delta
+                if choice.content:
+                    collected_messages.append(choice.content)
+                    print(choice.content, end='', flush=True)
+                if choice.function_call:
+                    if choice.function_call.name:
+                        function_name = choice.function_call.name
+                    if choice.function_call.arguments:
+                        function_args += choice.function_call.arguments
+            response_text = ''.join(collected_messages)
+            logger.info(f"Complete response from GPT-4o: {response_text}")
+            
+            if function_name:
+                function_call = {
+                    "name": function_name,
+                    "arguments": function_args
+                }
+            return response_text, function_call
         except Exception as e:
             logger.error(f"Error obtaining response from GPT-4: {e}")
-            return None
+            return None, None
 
     def handle_function_call(self, function_call, command):
-        function_name = function_call.name
-        params = json.loads(function_call.arguments)
+        function_name = function_call['name']
+        params = json.loads(function_call['arguments'])
 
         function_mapping = {
             "analyze_image": self.handle_analyze_image,
@@ -48,12 +70,11 @@ class Assistant:
         image_source = params.get("source")
         image = self._get_image_by_source(image_source)
         query_from_image64 = self.vision.analyze_image(image, command)
-        response_image = self.ask_gpt(query_from_image64)
+        response_image, function_call = self.ask_gpt(query_from_image64)
 
-        if response_image and response_image.choices[0].message.content:
-            description = response_image.choices[0].message.content
-            self.tts.speak(description)
-            self.update_ui("Astra", description)
+        if response_image:
+            self.tts.speak(response_image)
+            self.update_ui("Astra", response_image)
         else:
             self._handle_analysis_failure()
 
@@ -66,18 +87,19 @@ class Assistant:
 
     def process_command(self, command):
         self.update_ui("User", command)
-        response = self.ask_gpt(command)
+        response, function_call = self.ask_gpt(command)
+        logger.info(f'Response: {response} - Function Call: {function_call}') # DEBUG
 
         if response:
-            message = response.choices[0].message
-            if message.content:
-                self._process_message_content(message)
-            elif message.function_call:
-                self.handle_function_call(message.function_call, command)
+            if function_call:
+                self.handle_function_call(function_call, command)
+            else:
+                self._process_message_content(response)
+        else:
+            if function_call:
+                self.handle_function_call(function_call, command)
             else:
                 self._handle_processing_failure()
-        else:
-            self._handle_processing_failure()
 
     def start_recording(self):
         command = self.stt.listen_for_activation().lower()
@@ -94,10 +116,10 @@ class Assistant:
             return self.vision.latest_camera_capture
 
     def _process_message_content(self, message):
-        self.tts.speak(message.content)
-        self.update_ui("Astra", message.content)
-        if "```" in message.content:
-            explanation = self.typer.type_code(message.content)
+        self.tts.speak(message)
+        self.update_ui("Astra", message)
+        if "```" in message:
+            explanation = self.typer.type_code(message)
             if explanation:
                 self.tts.speak(explanation)
                 self.update_ui("Astra", explanation)

@@ -129,6 +129,7 @@ Enjoy using **Astra Assistant**! If you encounter any issues, feel free to open 
    - [ ] Add icons to the buttons.
    - [x] Make overlay widget.
    - [x] Add transparency
+   - [ ] Implement "design settings" to allow users to customize the UI (dark mode, light mode, adjust transparency, etc.)
 
 5. **Fix Default Macro**
    - [ ] Ensure the `ctrl+shift+a` key combination works correctly.

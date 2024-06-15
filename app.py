@@ -261,7 +261,7 @@ class AstraApp:
             with sd.InputStream(device=device_index, callback=audio_callback, channels=1, samplerate=44100) as stream:
                 self.audio_stream = stream
                 while self.testing_audio:
-                    sd.sleep(100)
+                    sd.sleep(50)
         except Exception as e:
             logger.error(f"Error opening audio device: {e}")
 
@@ -311,9 +311,13 @@ class AstraApp:
         ctk.CTkButton(tab, text="Save", command=save_models_settings).grid(column=0, row=4, padx=10, pady=10, columnspan=2)
 
     def append_message(self, sender, message):
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        self.text_area.insert(tk.END, f"{timestamp} [{sender}]: {message}\n")
-        self.text_area.yview(tk.END)
+        def write_message():
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            self.text_area.insert(tk.END, f"{timestamp} [{sender}]: {message}\n")
+            self.text_area.yview(tk.END)
+        
+        # Run write_message function in a separate thread
+        threading.Thread(target=write_message).start()
 
     def create_tray_icon(self):
         image = PILImage.open(os.path.join(os.getcwd(), "assets", "img", "icon.png"))

@@ -5,8 +5,8 @@ import pystray
 from pystray import MenuItem as item
 
 def create_tray_icon(self):
-    image = PILImage.open(os.path.join(os.getcwd(), "assets", "img", "icon.png"))
-    menu = (item('Abrir', self.show_main_window), item('Salir', self.exit_app))
+    image = PILImage.open(os.path.join(os.getcwd(), "assets", "img", "neuralgt-icon-round.png"))
+    menu = (item('Open', self.show_main_window), item('Exit', self.exit_app))
     self.tray_icon = pystray.Icon("Astra Assistant", image, "Astra Assistant", menu)
     threading.Thread(target=self.tray_icon.run, daemon=True).start()
 

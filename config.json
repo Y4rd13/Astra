@@ -11,7 +11,7 @@
             "voice": "nova"
         },
         "stt": {
-            "model": "base"
+            "model": "small"
         },
         "ai": "gpt-4o"
     }

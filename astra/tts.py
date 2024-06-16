@@ -5,6 +5,7 @@ import pyaudio
 import time
 import logging
 import numpy as np
+
 logger = logging.getLogger(__name__)
 
 chunk_size = 1024  # Asegurarse de que coincida con el de voice_visualizer
@@ -20,7 +21,8 @@ class TextToSpeech:
     def speak(self, text):
         def play_text():
             play_sound("message-incoming.mp3")
-            player_stream = pyaudio.PyAudio().open(format=pyaudio.paInt16, channels=1, rate=24000, output=True)
+            p = pyaudio.PyAudio()
+            player_stream = p.open(format=pyaudio.paInt16, channels=1, rate=24000, output=True)
 
             start_time = time.time()
 
@@ -40,6 +42,7 @@ class TextToSpeech:
 
             logger.info(f"Done in {int((time.time() - start_time) * 1000)}ms.")
             player_stream.close()
+            p.terminate()
 
         # Run the play_text function in a separate thread
         threading.Thread(target=play_text).start()

@@ -11,13 +11,13 @@ def create_widgets(self):
     self.root.grid_columnconfigure(0, weight=1)
     self.root.grid_columnconfigure(1, weight=2)  # Increase weight for the voice visualizer
     self.root.grid_columnconfigure(2, weight=1)
-    self.root.grid_rowconfigure(0, weight=0)  # VoiceVisualizer row
+    self.root.grid_rowconfigure(0, weight=1)  # VoiceVisualizer row
     self.root.grid_rowconfigure(1, weight=1)  # Text area row
     self.root.grid_rowconfigure(2, weight=1)  # User input row
     self.root.grid_rowconfigure(3, weight=0)  # Buttons row
 
     # Use the existing voice visualizer instance
-    self.voice_visualizer.grid(row=0, column=1, columnspan=1, sticky="nsew")
+    self.voice_visualizer.grid(row=0, column=0, columnspan=3, sticky="nsew")
 
     # Text area to display messages
     self.text_area = ctk.CTkTextbox(self.root, wrap=tk.WORD)

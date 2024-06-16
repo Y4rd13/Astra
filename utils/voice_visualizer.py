@@ -7,11 +7,11 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 chunk_size = 1024
 
 class VoiceVisualizer(ctk.CTkFrame):
-    def __init__(self, parent, height=200):  # Añadido parámetro de altura
-        super().__init__(parent, height=height)
+    def __init__(self, parent, height=200, width=800):  # Añadir parámetro de ancho
+        super().__init__(parent, height=height, width=width)
         self.closing = False  # Variable de bandera para el estado de cierre
 
-        self.figure, self.ax = plt.subplots(figsize=(5, 2))  # Ajustar tamaño de la figura
+        self.figure, self.ax = plt.subplots(figsize=(width/100, height/100))  # Ajustar tamaño de la figura
         self.figure.patch.set_facecolor('black')  # Fondo negro para la figura
         self.ax.set_facecolor('black')  # Fondo negro para los ejes
         self.x = np.arange(0, chunk_size)

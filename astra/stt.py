@@ -8,7 +8,7 @@ from utils.audio_utils import play_sound
 logger = logging.getLogger(__name__)
 
 class SpeechToText:
-    def __init__(self, model_name="medium", device_index=None):
+    def __init__(self, model_name="medium", device_index: int = 2):
         # SpeechRecognizer configuration
         self.recorder = sr.Recognizer()
 

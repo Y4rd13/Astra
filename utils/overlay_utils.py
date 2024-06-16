@@ -25,7 +25,7 @@ def create_overlay(self):
     image_record = Image.open(icon_path)
     self.overlay_image_record = ctk.CTkImage(light_image=image_record, size=(64, 64))
     
-    icon_stop_path = os.path.join(os.getcwd(), "assets", "img", "icon.png")
+    icon_stop_path = os.path.join(os.getcwd(), "assets", "img", "neuralgt-icon-active.png")
     image_stop = Image.open(icon_stop_path)
     self.overlay_image_stop = ctk.CTkImage(light_image=image_stop, size=(64, 64))
 

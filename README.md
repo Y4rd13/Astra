@@ -149,9 +149,14 @@ Enjoy using **Astra Assistant**! If you encounter any issues, feel free to open 
 
 8. **Other**
    - [ ] Add more constants (images path, sounds path, etc) to `constants.py` to avoid hardcoding.
-   - [ ] 
+   - [ ] Implement LangChain for multiple languages as Agents for the assistant.
+   - [ ] Implement local LLMs such as:
+       - [ ] MistralAI
+       - [ ] Codestral
+       - [ ] Whisper fine-tuned models to hear Astra's name.
    - [ ] Implement function calling such as:
        - [ ] Astra stop 
+  
 
 ### Notes
 

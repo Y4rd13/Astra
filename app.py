@@ -25,11 +25,11 @@ from config.settings import Settings
 class AstraApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Astra Assistant")
+        self.root.title("Astra")
         self.root.geometry(center_window_to_display(self.root, width=800, height=900, scale_factor=self.root._get_window_scaling()))
         self.root.attributes('-alpha', 0.98)  # Set transparency to 98%
 
-        icon_path = os.path.join(os.getcwd(), "assets", "img", "neuralgt-icon-round.png")
+        icon_path = os.path.join(os.getcwd(), "assets", "img", "neuralgt-icon.png")
         self.icon_image = ImageTk.PhotoImage(file=icon_path)
         self.root.wm_iconbitmap(icon_path)
         self.root.iconphoto(False, self.icon_image)

@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 import queue
 import logging
-from PIL import ImageTk
+from PIL import Image, ImageTk
 from utils.audio_utils import (
     toggle_recording, start_recording, stop_recording, record_and_process_audio,
     process_audio_queue, toggle_test_input_device, start_test_input_device,
@@ -30,9 +30,11 @@ class AstraApp:
         self.root.attributes('-alpha', 0.98)  # Set transparency to 98%
 
         icon_path = os.path.join(os.getcwd(), "assets", "img", "neuralgt-icon.png")
-        self.icon_image = ImageTk.PhotoImage(file=icon_path)
-        self.root.wm_iconbitmap(icon_path)
-        self.root.iconphoto(False, self.icon_image)
+        icon_image = Image.open(icon_path)
+        icon_image_large = ImageTk.PhotoImage(icon_image.resize((32, 32), Image.LANCZOS))
+        icon_image_small =  ImageTk.PhotoImage(icon_image.resize((16, 16), Image.LANCZOS))
+        self.root.wm_iconbitmap(os.path.join(os.getcwd(), "assets", "img", "neuralgt-icon.ico"))
+        self.root.iconphoto(False, icon_image_large, icon_image_small)
 
         load_dotenv()
         api_key = os.getenv('OPENAI_API_KEY')

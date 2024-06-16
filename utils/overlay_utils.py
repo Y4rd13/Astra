@@ -1,7 +1,7 @@
 import tkinter as tk
 import customtkinter as ctk
 import os
-from PIL import Image, ImageTk
+from PIL import Image
 
 def create_overlay(self):
     self.overlay = tk.Toplevel(self.root)
@@ -21,15 +21,13 @@ def create_overlay(self):
     self.overlay_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
     # Load and resize images for the recording button in the overlay
-    icon_path = os.path.join(os.getcwd(), "assets", "img", "icon.png")
+    icon_path = os.path.join(os.getcwd(), "assets", "img", "neuralgt-icon.png")
     image_record = Image.open(icon_path)
-    image_record_resized = image_record.resize((50, 50), Image.LANCZOS)
-    self.overlay_image_record = ImageTk.PhotoImage(image_record_resized)
+    self.overlay_image_record = ctk.CTkImage(light_image=image_record, size=(64, 64))
     
-    icon_stop_path = os.path.join(os.getcwd(), "assets", "img", "pause-play-01.png")
+    icon_stop_path = os.path.join(os.getcwd(), "assets", "img", "icon.png")
     image_stop = Image.open(icon_stop_path)
-    image_stop_resized = image_stop.resize((50, 50), Image.LANCZOS)
-    self.overlay_image_stop = ImageTk.PhotoImage(image_stop_resized)
+    self.overlay_image_stop = ctk.CTkImage(light_image=image_stop, size=(64, 64))
 
     # Central button to record audio in the overlay
     self.overlay_record_button = ctk.CTkButton(self.overlay_frame, text="", command=self.toggle_recording, width=50, height=50, image=self.overlay_image_record, fg_color="transparent")

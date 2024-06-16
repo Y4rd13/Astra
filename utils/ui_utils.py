@@ -7,6 +7,8 @@ from PIL import Image
 from utils.voice_visualizer import VoiceVisualizer
 
 def create_widgets(self):
+    image_size = (32, 32)
+
     # Configure grid layout for the root window to make it responsive
     self.root.grid_columnconfigure(0, weight=1)
     self.root.grid_columnconfigure(1, weight=2)  # Increase weight for the voice visualizer
@@ -27,23 +29,32 @@ def create_widgets(self):
     self.user_input = ctk.CTkTextbox(self.root, wrap=tk.WORD)
     self.user_input.grid(column=0, row=2, padx=20, pady=10, columnspan=3, sticky="nsew")
 
-    # Load image for the send button
-    self.image_send = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "assets", "img", "send.png")))
+    # Load and resize image for the send button
+    send_image_path = os.path.join(os.getcwd(), "assets", "img", "send.png")
+    send_image = Image.open(send_image_path)
+    self.image_send = ctk.CTkImage(light_image=send_image, size=image_size)
 
     # Button to send text
     self.send_button = ctk.CTkButton(self.root, text="", command=self.send_text, width=50, height=50, image=self.image_send, fg_color="transparent")
     self.send_button.grid(column=2, row=3, padx=20, pady=10)
 
-    # Load images for the recording button
-    self.image_record = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "assets", "img", "pause-play-00.png")))
-    self.image_stop = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "assets", "img", "pause-play-01.png")))
+    # Load and resize images for the recording button
+    record_image_path = os.path.join(os.getcwd(), "assets", "img", "pause-play-00.png")
+    record_image = Image.open(record_image_path)
+    self.image_record = ctk.CTkImage(light_image=record_image, size=image_size)
+
+    stop_image_path = os.path.join(os.getcwd(), "assets", "img", "pause-play-01.png")
+    stop_image = Image.open(stop_image_path)
+    self.image_stop = ctk.CTkImage(light_image=stop_image, size=image_size)
 
     # Central button to record audio
     self.record_button = ctk.CTkButton(self.root, text="", command=self.toggle_recording, width=50, height=50, image=self.image_record, fg_color="transparent")
     self.record_button.grid(column=1, row=3, padx=20, pady=20)
 
-    # Load image for the settings button
-    self.image_settings = ctk.CTkImage(light_image=Image.open(os.path.join(os.getcwd(), "assets", "img", "settings.png")))
+    # Load and resize image for the settings button
+    settings_image_path = os.path.join(os.getcwd(), "assets", "img", "settings.png")
+    settings_image = Image.open(settings_image_path)
+    self.image_settings = ctk.CTkImage(light_image=settings_image, size=image_size)
 
     # Button to open settings
     self.settings_button = ctk.CTkButton(self.root, text="", command=self.open_settings, width=50, height=50, image=self.image_settings, fg_color="transparent")

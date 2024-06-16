@@ -151,7 +151,8 @@ Enjoy using **Astra Assistant**! If you encounter any issues, feel free to open 
 8. **Essentials**:
    - Astra response time optimization
      - [x] General optimization: core (general methods) + stt (loading model) + tts (chunk processing)
-     - [ ] Improve response time for STT
+     - [x] Improve response time for STT
+     - [ ] Implement setting to adjust noise reduction for STT
      - [ ] Improve response time for the vision module
 
 9.  **Other**

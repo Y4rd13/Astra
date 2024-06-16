@@ -3,6 +3,8 @@ import speech_recognition as sr
 import whisper
 import torch
 import logging
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from utils.audio_utils import play_sound
 
 logger = logging.getLogger(__name__)
@@ -15,14 +17,27 @@ class SpeechToText:
         # Microphone configuration
         self.source = sr.Microphone(sample_rate=16000, device_index=device_index)
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.audio_model = whisper.load_model(model_name, device=self.device)
-        logger.info(f"Device Model: {self.audio_model.device} - Whisper Model: {model_name} - Device Index: {device_index}")
 
+        # Load model asynchronously
+        self.audio_model = None
+        self.model_name = model_name
+        asyncio.run(self.load_model_async())
+        
         # Adjust for ambient noise once during initialization
         with self.source as s:
             self.recorder.adjust_for_ambient_noise(s)
 
+    async def load_model_async(self):
+        loop = asyncio.get_running_loop()
+        with ThreadPoolExecutor() as pool:
+            self.audio_model = await loop.run_in_executor(pool, whisper.load_model, self.model_name, self.device)
+        logger.info(f"Device Model: {self.audio_model.device} - Whisper Model: {self.model_name}")
+
     def listen_for_activation(self):
+        if not self.audio_model:
+            logger.error("Audio model is not loaded yet.")
+            return ""
+
         logger.info("Listening for activation...")
         with self.source as source:
             logger.info("Please speak now...")

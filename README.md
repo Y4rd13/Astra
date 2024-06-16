@@ -143,6 +143,8 @@ Enjoy using **Astra Assistant**! If you encounter any issues, feel free to open 
    - [ ] Ensure the `ctrl+shift+a` key combination works correctly.
    - [ ] Allow customization of the macro through the settings.
 
+7. **Other**
+   - [ ] Add more constants (images path, sounds path, etc) to `constants.py` to avoid hardcoding.
 
 ### Notes
 

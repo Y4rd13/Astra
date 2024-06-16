@@ -1,4 +1,3 @@
-
 import customtkinter as ctk
 import sounddevice as sd
 from . import app_utils
@@ -7,6 +6,7 @@ def open_settings(self):
     settings_window = ctk.CTkToplevel(self.root)
     settings_window.title("Settings")
     settings_window.geometry(app_utils.center_window_to_display(settings_window, 600, 400, settings_window._get_window_scaling()))
+    settings_window.resizable(False, False)
     settings_window.attributes('-alpha', 0.98)
     
     # Make the settings window always on top
@@ -23,10 +23,12 @@ def open_settings(self):
     tab_sound = tabview.add("Sound Settings")
     tab_macros = tabview.add("Macros")
     tab_models = tabview.add("Models")
+    tab_appearance = tabview.add("Appearance")
 
     self.create_sound_settings(tab_sound)
     self.create_macros_settings(tab_macros)
     self.create_models_settings(tab_models)
+    self.create_appearance_settings(tab_appearance)
 
 def create_sound_settings(self, tab):
     tab.grid_columnconfigure(0, weight=1)
@@ -97,3 +99,26 @@ def create_models_settings(self, tab):
 
     ctk.CTkButton(tab, text="Save", command=save_models_settings).grid(column=0, row=4, padx=10, pady=10, columnspan=2)
 
+def create_appearance_settings(self, tab):
+    tab.grid_columnconfigure(0, weight=1)
+    tab.grid_columnconfigure(1, weight=1)
+
+    # Transparency setting
+    ctk.CTkLabel(tab, text="Transparency:").grid(column=0, row=0, padx=10, pady=10, sticky="e")
+    transparency_var = ctk.DoubleVar(value=self.settings.get_transparency())
+    transparency_slider = ctk.CTkSlider(tab, from_=0.1, to=1.0, variable=transparency_var)
+    transparency_slider.grid(column=1, row=0, padx=10, pady=10, sticky="w")
+
+    # Theme setting
+    ctk.CTkLabel(tab, text="Theme:").grid(column=0, row=1, padx=10, pady=10, sticky="e")
+    theme_var = ctk.StringVar(value=self.settings.get_theme())
+    theme_option_menu = ctk.CTkOptionMenu(tab, variable=theme_var, values=["Dark", "Light"])
+    theme_option_menu.grid(column=1, row=1, padx=10, pady=10, sticky="w")
+
+    def apply_appearance_settings():
+        self.root.attributes('-alpha', transparency_var.get())
+        ctk.set_appearance_mode(theme_var.get())
+        self.settings.set_transparency(transparency_var.get())
+        self.settings.set_theme(theme_var.get())
+
+    ctk.CTkButton(tab, text="Apply", command=apply_appearance_settings).grid(column=0, row=2, padx=10, pady=10, columnspan=2)

@@ -113,7 +113,8 @@ Enjoy using **Astra Assistant**! If you encounter any issues, feel free to open 
    - [x] Optimize response time for STT processing.
   
 2. **Core**
-   - [ ] Implement memory for the assistant to remember previous interactions.
+   - [x] Implement memory for the assistant to remember previous interactions.
+   - [ ] Limit memory/chat-history to a certain number of messages according to the token limit for the current model.
   
 3. **Vision**
    - [ ] semantic-chunking for video chunking analysis, instead of the current implementation.

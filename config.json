@@ -11,8 +11,12 @@
             "voice": "nova"
         },
         "stt": {
-            "model": "small"
+            "model": "medium"
         },
         "ai": "gpt-4o"
+    },
+    "appearance": {
+        "transparency": 0.838,
+        "theme": "Dark"
     }
 }

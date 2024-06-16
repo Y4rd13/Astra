@@ -11,7 +11,7 @@ from utils.audio_utils import (
 )
 from utils.overlay_utils import create_overlay, start_move, do_move
 from utils.window_state_utils import on_minimize, on_restore
-from utils.settings_utils import open_settings, create_sound_settings, create_macros_settings, create_models_settings
+from utils.settings_utils import open_settings, create_sound_settings, create_macros_settings, create_models_settings, create_appearance_settings
 from utils.tray_utils import create_tray_icon, show_main_window, exit_app
 from utils.ui_utils import create_widgets, send_text, append_message, VoiceVisualizer
 
@@ -25,14 +25,19 @@ from config.settings import Settings
 class AstraApp:
     def __init__(self, root):
         self.root = root
+        self.settings = Settings()
+        
+        # Set appearance mode based on settings
+        ctk.set_appearance_mode(self.settings.get_theme())
+        
         self.root.title("Astra")
         self.root.geometry(center_window_to_display(self.root, width=800, height=900, scale_factor=self.root._get_window_scaling()))
-        self.root.attributes('-alpha', 0.98)  # Set transparency to 98%
+        self.root.attributes('-alpha', self.settings.get_transparency())  # Set initial transparency
 
         icon_path = os.path.join(os.getcwd(), "assets", "img", "neuralgt-icon.png")
         icon_image = Image.open(icon_path)
         icon_image_large = ImageTk.PhotoImage(icon_image.resize((32, 32), Image.LANCZOS))
-        icon_image_small =  ImageTk.PhotoImage(icon_image.resize((16, 16), Image.LANCZOS))
+        icon_image_small = ImageTk.PhotoImage(icon_image.resize((16, 16), Image.LANCZOS))
         self.root.wm_iconbitmap(os.path.join(os.getcwd(), "assets", "img", "neuralgt-icon.ico"))
         self.root.iconphoto(False, icon_image_large, icon_image_small)
 
@@ -43,7 +48,6 @@ class AstraApp:
         self.voice_visualizer = VoiceVisualizer(self.root, height=200)
         
         # Create an instance of the assistant
-        self.settings = Settings()
         self.astra = Assistant(api_key=api_key, device_index=self.settings.get_input_device(), ui_callback=self.append_message, settings=self.settings, voice_visualizer=self.voice_visualizer)
 
         # Create UI components
@@ -112,6 +116,7 @@ class AstraApp:
     create_sound_settings = create_sound_settings
     create_macros_settings = create_macros_settings
     create_models_settings = create_models_settings
+    create_appearance_settings = create_appearance_settings
 
     create_tray_icon = create_tray_icon
     show_main_window = show_main_window
@@ -123,7 +128,6 @@ class AstraApp:
 
 def main():
     root = ctk.CTk()
-    ctk.set_appearance_mode("Dark")
     app = AstraApp(root)
     root.mainloop()
 

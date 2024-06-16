@@ -137,7 +137,13 @@ Enjoy using **Astra Assistant**! If you encounter any issues, feel free to open 
    - [x] Add transparency
    - [ ] Implement "design settings" to allow users to customize the UI (dark mode, light mode, adjust transparency, etc.)
    - [x] Adding Welcome Sound 
+   - [x] Add new icons 
 
 6. **Fix Default Macro**
    - [ ] Ensure the `ctrl+shift+a` key combination works correctly.
    - [ ] Allow customization of the macro through the settings.
+
+
+### Notes
+
+- [Window Icon in Tk (tkinter)](https://pythonassets.com/posts/window-icon-in-tk-tkinter/)

@@ -43,4 +43,3 @@ def request_payload(query: str) -> dict:
                     }
                 ]
             }
-

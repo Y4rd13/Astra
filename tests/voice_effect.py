@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-device_index = 3  # De acuerdo al input device que se utilice del micrófono
+device_index = 2  # De acuerdo al input device que se utilice del micrófono
 samplerate = 44100
 chunk_size = 1024
 

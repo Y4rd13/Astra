@@ -1,5 +1,6 @@
 import json
 import logging
+import tiktoken
 from openai import OpenAI
 from .stt import SpeechToText
 from .tts import TextToSpeech
@@ -11,16 +12,17 @@ logger = logging.getLogger(__name__)
 
 class Assistant:
     def __init__(self, api_key, device_index, ui_callback=None, settings=None, voice_visualizer=None):
-        self.client = OpenAI(api_key=api_key)
+        self.client = OpenAI(api_key=api_key)  # Initialize the OpenAI client with the API key
         self.ui_callback = ui_callback  # Callback to update the UI
-        self.settings = settings or {}
-        self.stt = SpeechToText(model_name=self.settings.get_stt_model(), device_index=device_index)
-        self.tts = TextToSpeech(api_key, model=self.settings.get_tts_model(), voice=self.settings.get_tts_voice(), visualizer=voice_visualizer)
-        self.vision = Vision()
-        self.typer = Typer()
+        self.settings = settings or {}  # Settings for the assistant
+        self.stt = SpeechToText(model_name=self.settings.get_stt_model(), device_index=device_index)  # Initialize SpeechToText
+        self.tts = TextToSpeech(api_key, model=self.settings.get_tts_model(), voice=self.settings.get_tts_voice(), visualizer=voice_visualizer)  # Initialize TextToSpeech
+        self.vision = Vision()  # Initialize Vision
+        self.typer = Typer()  # Initialize Typer
         self.vision.start()  # Start continuous capture in separate threads
 
         self.chat_history = []  # Initialize chat history
+        self.tokenizer = tiktoken.encoding_for_model("gpt-4o")  # Initialize the tokenizer for the GPT-4o model
 
     def ask_gpt(self, query):
         try:
@@ -47,7 +49,7 @@ class Assistant:
                         function_args += choice.function_call.arguments
             response_text = ''.join(collected_messages)
             logger.info(f"Complete response from GPT-4o: {response_text}")
-            
+
             if function_name:
                 function_call = {
                     "name": function_name,
@@ -67,13 +69,14 @@ class Assistant:
 
     def _trim_chat_history(self):
         # Limit the number of tokens in the chat history to fit within the model's limits
-        MAX_TOKENS = 128000 - 4096  # Adjust for the max completion tokens
-        current_tokens = sum(len(message['content'].split()) for message in self.chat_history if isinstance(message['content'], str))
-        
+        MAX_TOKENS = 128000  # Maximum token limit for the GPT-4o model
+        current_tokens = sum(len(self.tokenizer.encode(message['content'])) for message in self.chat_history if isinstance(message['content'], str))
+        logger.info(f"Current tokens: {current_tokens}")
+
+        # Remove oldest messages until the current token count is within the limit
         while current_tokens > MAX_TOKENS:
-            # Remove the oldest message
             removed_message = self.chat_history.pop(0)
-            current_tokens -= len(removed_message['content'].split())
+            current_tokens -= len(self.tokenizer.encode(removed_message['content']))
 
     def handle_function_call(self, function_call, command):
         function_name = function_call['name']

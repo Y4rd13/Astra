@@ -114,7 +114,7 @@ Enjoy using **Astra Assistant**! If you encounter any issues, feel free to open 
   
 2. **Core**
    - [x] Implement memory for the assistant to remember previous interactions.
-   - [ ] Limit memory/chat-history to a certain number of messages according to the token limit for the current model.
+   - [x] Limit memory/chat-history to a certain number of messages according to the token limit for the current model.
   
 3. **Vision**
    - [ ] semantic-chunking for video chunking analysis, instead of the current implementation.
@@ -139,7 +139,7 @@ Enjoy using **Astra Assistant**! If you encounter any issues, feel free to open 
    - [x] Add icons to the buttons.
    - [x] Make overlay widget.
    - [x] Add transparency
-   - [ ] Implement "design settings" to allow users to customize the UI (dark mode, light mode, adjust transparency, etc.)
+   - [x] Implement "design settings" to allow users to customize the UI (dark mode, light mode, adjust transparency, etc.)
    - [x] Adding Welcome Sound 
    - [x] Add new icons 
    - [ ] Stop/Record button can interrupt the assistant's response to give priority to the user's input.

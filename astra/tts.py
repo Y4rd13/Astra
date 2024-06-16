@@ -8,7 +8,7 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-chunk_size = 1024  # Asegurarse de que coincida con el de voice_visualizer
+chunk_size = 1024  # Same as in voice_effect.py for the visualizer plot
 
 class TextToSpeech:
     def __init__(self, api_key, model="tts-1", voice="nova", visualizer=None):
@@ -35,8 +35,8 @@ class TextToSpeech:
                 for chunk in response.iter_bytes(chunk_size=1024):
                     player_stream.write(chunk)
                     if self.visualizer:
-                        # Convertir chunk a datos de numpy y actualizar el visualizador
-                        data = np.frombuffer(chunk, dtype=np.int16) / 32768.0  # Normalizar
+                        # Convert chunk to numpy data and update the visualizer
+                        data = np.frombuffer(chunk, dtype=np.int16) / 32768.0  # Normalize the data
                         if len(data) < chunk_size:
                             data = np.pad(data, (0, chunk_size - len(data)), 'constant')
                         elif len(data) > chunk_size:

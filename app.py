@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 import queue
 import logging
-from PIL import Image, ImageTk
+from PIL import ImageTk
 from utils.audio_utils import (
     toggle_recording, start_recording, stop_recording, record_and_process_audio,
     process_audio_queue, toggle_test_input_device, start_test_input_device,
@@ -70,7 +70,7 @@ class AstraApp:
         play_sound("welcome.mp3")
 
     def on_closing(self):
-        self.cancel_after_tasks()  # Cancelar todas las tareas programadas
+        self.cancel_after_tasks()
         self.root.withdraw() 
         self.root.quit()
         self.root.destroy()

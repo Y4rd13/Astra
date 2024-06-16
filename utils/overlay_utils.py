@@ -16,7 +16,7 @@ def create_overlay(self):
     self.overlay_canvas.pack(fill="both", expand=True)
     self.overlay_canvas.create_oval(0, 0, 100, 100, fill="black")
 
-    # Create a frame inside the canvas to hold the button
+    # Create a frame inside the canvas to hold the buttons
     self.overlay_frame = ctk.CTkFrame(self.overlay, width=100, height=100, fg_color="black", corner_radius=50)
     self.overlay_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 

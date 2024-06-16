@@ -20,9 +20,16 @@ class Assistant:
         self.typer = Typer()
         self.vision.start()  # Start continuous capture in separate threads
 
+        self.chat_history = []  # Initialize chat history
+
     def ask_gpt(self, query):
         try:
-            request_params = request_payload(query)
+            # Add user query to chat history
+            self.chat_history.append({"role": "user", "content": query})
+
+            # Create the request payload with chat history
+            request_params = request_payload(query, self.chat_history)
+
             response = self.client.chat.completions.create(**request_params, stream=True)
             collected_messages = []
             function_call = None
@@ -46,10 +53,27 @@ class Assistant:
                     "name": function_name,
                     "arguments": function_args
                 }
+
+            # Add assistant response to chat history
+            self.chat_history.append({"role": "assistant", "content": response_text})
+
+            # Trim chat history to fit within token limits
+            self._trim_chat_history()
+
             return response_text, function_call
         except Exception as e:
             logger.error(f"Error obtaining response from GPT-4: {e}")
             return None, None
+
+    def _trim_chat_history(self):
+        # Limit the number of tokens in the chat history to fit within the model's limits
+        MAX_TOKENS = 128000 - 4096  # Adjust for the max completion tokens
+        current_tokens = sum(len(message['content'].split()) for message in self.chat_history if isinstance(message['content'], str))
+        
+        while current_tokens > MAX_TOKENS:
+            # Remove the oldest message
+            removed_message = self.chat_history.pop(0)
+            current_tokens -= len(removed_message['content'].split())
 
     def handle_function_call(self, function_call, command):
         function_name = function_call['name']

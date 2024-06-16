@@ -7,9 +7,32 @@ def open_settings(self):
     settings_window = ctk.CTkToplevel(self.root)
     settings_window.title("Settings")
     settings_window.geometry(app_utils.center_window_to_display(settings_window, 600, 400, settings_window._get_window_scaling()))
+    settings_window.resizable(False, False)
     settings_window.attributes('-alpha', 0.98)
     
     # Make the settings window always on top
+    settings_window.attributes("-topmost", True)
+    # Ensure the settings window has focus
+    settings_window.focus_force()
+
+    tabview = ctk.CTkTabview(settings_window, width=580, height=360)
+    tabview.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+
+    settings_window.grid_columnconfigure(0, weight=1)
+    settings_window.grid_rowconfigure(0, weight=1)
+
+    tab_sound = tabview.add("Sound Settings")
+    tab_macros = tabview.add("Macros")
+    tab_models = tabview.add("Models")
+
+    self.create_sound_settings(tab_sound)
+    self.create_macros_settings(tab_macros)
+    self.create_models_settings(tab_models)
+    
+    # Make the settings window always on top
+    settings_window.attributes("-topmost", True)
+    # Ensure the settings window has focus
+    settings_window.focus_force()
     settings_window.attributes("-topmost", True)
     # Ensure the settings window has focus
     settings_window.focus_force()

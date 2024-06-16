@@ -13,7 +13,7 @@ from utils.overlay_utils import create_overlay, start_move, do_move
 from utils.window_state_utils import on_minimize, on_restore
 from utils.settings_utils import open_settings, create_sound_settings, create_macros_settings, create_models_settings
 from utils.tray_utils import create_tray_icon, show_main_window, exit_app
-from utils.ui_utils import create_widgets, send_text, append_message
+from utils.ui_utils import create_widgets, send_text, append_message, VoiceVisualizer  # Importar VoiceVisualizer
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(name)s] [%(levelname)s] - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 logger = logging.getLogger(__name__)
@@ -21,7 +21,6 @@ logger = logging.getLogger(__name__)
 from astra.core import Assistant
 from utils.app_utils import center_window_to_display
 from config.settings import Settings
-
 
 class AstraApp:
     def __init__(self, root):
@@ -33,9 +32,12 @@ class AstraApp:
         load_dotenv()
         api_key = os.getenv('OPENAI_API_KEY')
 
+        # Crear la instancia de VoiceVisualizer
+        self.voice_visualizer = VoiceVisualizer(self.root, height=200)
+        
         # Create an instance of the assistant
         self.settings = Settings()
-        self.astra = Assistant(api_key=api_key, device_index=self.settings.get_input_device(), ui_callback=self.append_message, settings=self.settings)
+        self.astra = Assistant(api_key=api_key, device_index=self.settings.get_input_device(), ui_callback=self.append_message, settings=self.settings, voice_visualizer=self.voice_visualizer)
 
         # Create UI components
         self.create_widgets()

@@ -33,6 +33,12 @@ class VoiceVisualizer(ctk.CTkFrame):
 
     def update_plot(self, data):
         if not self.closing:
+            # Ajustar el tamaño de los datos recibidos
+            if len(data) < chunk_size:
+                data = np.pad(data, (0, chunk_size - len(data)), 'constant')
+            elif len(data) > chunk_size:
+                data = data[:chunk_size]
+
             self.line.set_ydata(data)
             self.canvas.draw_idle()
 

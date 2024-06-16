@@ -6,7 +6,6 @@ import threading
 from PIL import Image
 from utils.voice_visualizer import VoiceVisualizer
 
-
 def create_widgets(self):
     # Configure grid layout for the root window to make it responsive
     self.root.grid_columnconfigure(0, weight=1)
@@ -17,9 +16,8 @@ def create_widgets(self):
     self.root.grid_rowconfigure(2, weight=1)  # User input row
     self.root.grid_rowconfigure(3, weight=0)  # Buttons row
 
-    # Create voice visualizer and center it
-    self.voice_visualizer = VoiceVisualizer(self.root, height=200)
-    self.voice_visualizer.grid(row=0, column=1, columnspan=1, sticky="nsew") 
+    # Use the existing voice visualizer instance
+    self.voice_visualizer.grid(row=0, column=1, columnspan=1, sticky="nsew")
 
     # Text area to display messages
     self.text_area = ctk.CTkTextbox(self.root, wrap=tk.WORD)

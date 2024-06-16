@@ -10,12 +10,12 @@ from utils.constants import request_payload
 logger = logging.getLogger(__name__)
 
 class Assistant:
-    def __init__(self, api_key, device_index, ui_callback=None, settings=None):
+    def __init__(self, api_key, device_index, ui_callback=None, settings=None, voice_visualizer=None):
         self.client = OpenAI(api_key=api_key)
         self.ui_callback = ui_callback  # Callback to update the UI
         self.settings = settings or {}
         self.stt = SpeechToText(model_name=self.settings.get_stt_model(), device_index=device_index)
-        self.tts = TextToSpeech(api_key, model=self.settings.get_tts_model(), voice=self.settings.get_tts_voice())
+        self.tts = TextToSpeech(api_key, model=self.settings.get_tts_model(), voice=self.settings.get_tts_voice(), visualizer=voice_visualizer)
         self.vision = Vision()
         self.typer = Typer()
         self.vision.start()  # Start continuous capture in separate threads

@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 import queue
 import logging
 
-# Importar métodos de utils
 from utils.audio_utils import (
     toggle_recording, start_recording, stop_recording, record_and_process_audio,
     process_audio_queue, toggle_test_input_device, start_test_input_device,
@@ -28,7 +27,7 @@ class AstraApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Astra Assistant")
-        self.root.geometry(center_window_to_display(self.root, 800, 600, self.root._get_window_scaling()))
+        self.root.geometry(center_window_to_display(self.root, width=800, height=900, scale_factor=self.root._get_window_scaling()))
         self.root.attributes('-alpha', 0.98)  # Set transparency to 98%
 
         load_dotenv()
@@ -54,7 +53,7 @@ class AstraApp:
         # Create system tray icon
         self.create_tray_icon()
 
-    # Métodos importados de utils
+    # Import methods from utils
     toggle_recording = toggle_recording
     start_recording = start_recording
     stop_recording = stop_recording

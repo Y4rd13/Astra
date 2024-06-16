@@ -147,8 +147,15 @@ Enjoy using **Astra Assistant**! If you encounter any issues, feel free to open 
 7. **Fix Default Macro**
    - [ ] Ensure the `ctrl+shift+a` key combination works correctly.
    - [ ] Allow customization of the macro through the settings.
+  
+8. **Essentials**:
+   - Astra response time optimization
+     - [x] General optimization: core (general methods) + stt (loading model) + tts (chunk processing)
+     - [x] Improve response time for STT
+     - [ ] Implement setting to adjust noise reduction for STT
+     - [ ] Improve response time for the vision module
 
-8. **Other**
+9.  **Other**
    - [ ] Add more constants (images path, sounds path, etc) to `constants.py` to avoid hardcoding.
    - [ ] Implement LangChain for multiple languages as Agents for the assistant.
    - [ ] Implement local LLMs such as:

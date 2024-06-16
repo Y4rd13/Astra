@@ -1,6 +1,6 @@
 {
     "sound": {
-        "input_device": 3
+        "input_device": 2
     },
     "macros": {
         "record_audio": "ctrl+shift+a"
@@ -11,7 +11,7 @@
             "voice": "nova"
         },
         "stt": {
-            "model": "medium"
+            "model": "base"
         },
         "ai": "gpt-4o"
     }

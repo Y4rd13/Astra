@@ -48,3 +48,4 @@ class TextToSpeech:
 
         # Run the play_text function in a separate thread
         threading.Thread(target=play_text).start()
+

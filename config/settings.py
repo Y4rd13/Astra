@@ -7,12 +7,13 @@ CONFIG_FILE = 'config.json'
 
 class Settings:
     def __init__(self):
+        # Default settings
         self.config = {
             "sound": {
-                "input_device": 2  # Default device index
+                "input_device": 2
             },
             "macros": {
-                "record_audio": "ctrl+shift+a"  # Default macro
+                "record_audio": "ctrl+shift+a"
             },
             "models": {
                 "tts": {
@@ -22,7 +23,11 @@ class Settings:
                 "stt": {
                     "model": "medium"
                 },
-                "ai": "gpt-4o"
+                "ai": "gpt-4o" 
+            },
+            "appearance": {
+                "transparency": 0.98,
+                "theme": "Dark"
             }
         }
         self.load_config()
@@ -66,5 +71,19 @@ class Settings:
     
     def get_ai_model(self):
         return self.config["models"]["ai"]
+
+    def get_transparency(self):
+        return self.config["appearance"]["transparency"]
+    
+    def set_transparency(self, transparency):
+        self.config["appearance"]["transparency"] = transparency
+        self.save_config()
+
+    def get_theme(self):
+        return self.config["appearance"]["theme"]
+    
+    def set_theme(self, theme):
+        self.config["appearance"]["theme"] = theme
+        self.save_config()
 
 settings = Settings()

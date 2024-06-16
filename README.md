@@ -114,19 +114,22 @@ Enjoy using **Astra Assistant**! If you encounter any issues, feel free to open 
   
 2. **Core**
    - [ ] Implement memory for the assistant to remember previous interactions.
+  
+3. **Vision**
+   - [ ] semantic-chunking for video chunking analysis, instead of the current implementation.
 
-3. **Audio Visualizer**:
+4. **Audio Visualizer**:
    - [ ] Add a visualizer to display audio input levels (STT).
    - [x] Implement a visualizer for audio output (TTS).
    - [ ] Make the visualizer responsive.
    - [ ] Fix visualizer to generate sound across all the plot line.
 
-4. **Fix `typer.py`**
+5. **Fix `typer.py`**
    - [ ] Correct the indentation issue when writing code.
    - [ ] Ensure the generated code is properly formatted.
    - [ ] Verify that writing code in different languages maintains the appropriate indentation.
 
-5. **UI**
+6. **UI**
    - [ ] Add switch button to keep active screen and/or cam vision.
    - [ ] Add a button to attach a file to the chat. (Image, audio, video, etc.)
    - [x] Make the chat box responsive to the window size.
@@ -138,13 +141,17 @@ Enjoy using **Astra Assistant**! If you encounter any issues, feel free to open 
    - [ ] Implement "design settings" to allow users to customize the UI (dark mode, light mode, adjust transparency, etc.)
    - [x] Adding Welcome Sound 
    - [x] Add new icons 
+   - [ ] Stop/Record button can interrupt the assistant's response to give priority to the user's input.
 
-6. **Fix Default Macro**
+7. **Fix Default Macro**
    - [ ] Ensure the `ctrl+shift+a` key combination works correctly.
    - [ ] Allow customization of the macro through the settings.
 
-7. **Other**
+8. **Other**
    - [ ] Add more constants (images path, sounds path, etc) to `constants.py` to avoid hardcoding.
+   - [ ] 
+   - [ ] Implement function calling such as:
+       - [ ] Astra stop 
 
 ### Notes
 

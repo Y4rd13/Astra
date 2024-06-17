@@ -84,7 +84,7 @@ def create_models_settings(self, tab):
 
     ctk.CTkLabel(tab, text="STT Model:").grid(column=0, row=2, padx=10, pady=10, sticky="e")
     stt_model_var = ctk.StringVar(value=self.settings.get_stt_model())
-    stt_model_option_menu = ctk.CTkOptionMenu(tab, variable=stt_model_var, values=["tiny", "base", "small", "medium", "large"])
+    stt_model_option_menu = ctk.CTkOptionMenu(tab, variable=stt_model_var, values=["large-v2", "large-v3", "distil-large-v2", "distil-large-v3", "distil-medium.en", "base", "small", "medium"])
     stt_model_option_menu.grid(column=1, row=2, padx=10, pady=10, sticky="w")
 
     ctk.CTkLabel(tab, text="AI Model:").grid(column=0, row=3, padx=10, pady=10, sticky="e")

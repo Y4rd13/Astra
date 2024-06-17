@@ -116,21 +116,26 @@ Enjoy using **Astra Assistant**! If you encounter any issues, feel free to open 
    - [x] Implement memory for the assistant to remember previous interactions.
    - [x] Limit memory/chat-history to a certain number of messages according to the token limit for the current model.
   
-3. **Vision**
+3. **STT**
+   - [ ] Voice Activity Detection: Automatically detects when you start and stop speaking.
+   - [ ] Realtime Transcription: Transforms speech to text in real-time (fast-whisper).
+   - [ ] Wake Word Activation: Can activate upon detecting a designated wake word.
+  
+4. **Vision**
    - [ ] semantic-chunking for video chunking analysis, instead of the current implementation.
 
-4. **Audio Visualizer**:
+5. **Audio Visualizer**:
    - [ ] Add a visualizer to display audio input levels (STT).
    - [x] Implement a visualizer for audio output (TTS).
    - [ ] Make the visualizer responsive.
    - [ ] Fix visualizer to generate sound across all the plot line.
 
-5. **Fix `typer.py`**
+6. **Fix `typer.py`**
    - [ ] Correct the indentation issue when writing code.
    - [ ] Ensure the generated code is properly formatted.
    - [ ] Verify that writing code in different languages maintains the appropriate indentation.
 
-6. **UI**
+7. **UI**
    - [ ] Add switch button to keep active screen and/or cam vision.
    - [ ] Add a button to attach a file to the chat. (Image, audio, video, etc.)
    - [x] Make the chat box responsive to the window size.
@@ -144,18 +149,18 @@ Enjoy using **Astra Assistant**! If you encounter any issues, feel free to open 
    - [x] Add new icons 
    - [ ] Stop/Record button can interrupt the assistant's response to give priority to the user's input.
 
-7. **Fix Default Macro**
+8. **Fix Default Macro**
    - [ ] Ensure the `ctrl+shift+a` key combination works correctly.
    - [ ] Allow customization of the macro through the settings.
   
-8. **Essentials**:
+9.  **Essentials**:
    - Astra response time optimization
      - [x] General optimization: core (general methods) + stt (loading model) + tts (chunk processing)
      - [x] Improve response time for STT
      - [ ] Implement setting to adjust noise reduction for STT
      - [ ] Improve response time for the vision module
 
-9.  **Other**
+10. **Other**
    - [ ] Add more constants (images path, sounds path, etc) to `constants.py` to avoid hardcoding.
    - [ ] Implement LangChain for multiple languages as Agents for the assistant.
    - [ ] Implement local LLMs such as:

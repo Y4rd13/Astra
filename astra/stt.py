@@ -66,7 +66,7 @@ class SpeechToText:
             keyword_index = self.porcupine.process(pcm)
             if keyword_index >= 0:
                 logger.info("Wake word detected!")
-                play_sound("wake_word_detected.mp3")
+                play_sound("wake-word-detected.mp3")
                 self.listen_for_activation()
                 break
 
@@ -80,7 +80,7 @@ class SpeechToText:
             logger.info("Please speak now...")
             audio = self.recorder.listen(source)
             logger.info("Recording finished, processing...")
-            play_sound("record-finished.mp3")
+            play_sound("wake-word-detected.mp3")
 
             # Convert audio to text using Faster-Whisper
             audio_data = np.frombuffer(audio.get_raw_data(), dtype=np.int16).astype(np.float32) / 32768.0

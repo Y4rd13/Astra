@@ -21,7 +21,7 @@ class Settings:
                     "voice": "nova"
                 },
                 "stt": {
-                    "model": "medium"
+                    "model": "large-v3"
                 },
                 "ai": "gpt-4o" 
             },

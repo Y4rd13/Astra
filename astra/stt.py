@@ -53,11 +53,7 @@ class SpeechToText:
 
             # Convert audio to text using Faster-Whisper
             audio_data = np.frombuffer(audio.get_raw_data(), dtype=np.int16).astype(np.float32) / 32768.0
-            segments, info = self.audio_model.transcribe(
-                audio_data, 
-                beam_size=5,
-                vad_filter=True # The default behavior is conservative and only removes silence longer than 2 seconds
-            )
+            segments, info = self.audio_model.transcribe(audio_data, beam_size=5, vad_filter=True)
             
             text = " ".join(segment.text for segment in segments).strip()
             logger.info(f"Recognized text: {text}")

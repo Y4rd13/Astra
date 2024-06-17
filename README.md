@@ -118,8 +118,9 @@ Enjoy using **Astra Assistant**! If you encounter any issues, feel free to open 
   
 3. **STT**
    - [ ] Voice Activity Detection: Automatically detects when you start and stop speaking.
-   - [ ] Realtime Transcription: Transforms speech to text in real-time (fast-whisper).
    - [ ] Wake Word Activation: Can activate upon detecting a designated wake word.
+   - [x] Realtime Transcription: Transforms speech to text in real-time (fast-whisper).
+   - [x] Integrate Faster-Whisper for faster STT processing.
   
 4. **Vision**
    - [ ] semantic-chunking for video chunking analysis, instead of the current implementation.

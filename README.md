@@ -118,6 +118,7 @@ Enjoy using **Astra Assistant**! If you encounter any issues, feel free to open 
   
 3. **STT**
    - [ ] Voice Activity Detection: Automatically detects when you start and stop speaking.
+   - [ ] Always listening: Enable the assistant to listen continuously for voice commands.
    - [ ] Wake Word Activation: Can activate upon detecting a designated wake word.
    - [x] Realtime Transcription: Transforms speech to text in real-time (fast-whisper).
    - [x] Integrate Faster-Whisper for faster STT processing.

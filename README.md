@@ -125,7 +125,7 @@ Enjoy using **Astra Assistant**! If you encounter any issues, feel free to open 
    - [x] Wake Word Activation: Can activate upon detecting a designated wake word.
    - [x] Realtime Transcription: Transforms speech to text in real-time (fast-whisper).
    - [x] Integrate Faster-Whisper for faster STT processing.
-   - [x] vad_filter integration: Enable the voice activity detection (VAD) to filter out parts of the audio without speech. This step is using the (Silero VAD model)[https://github.com/snakers4/silero-vad].
+   - [x] vad_filter integration: Enable the voice activity detection (VAD) to filter out parts of the audio without speech. This step is using the [Silero VAD model](https://github.com/snakers4/silero-vad).
    - [ ] Stop/Record button can interrupt the assistant's response to give priority to the user's input.
    - [ ] Update input audio device settings to allow users to select the desired microphone.
    - [ ] Implement function calling such as:

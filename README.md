@@ -175,3 +175,14 @@ Enjoy using **Astra Assistant**! If you encounter any issues, feel free to open 
 ### Notes
 
 - [Window Icon in Tk (tkinter)](https://pythonassets.com/posts/window-icon-in-tk-tkinter/)
+
+La imagen de record_image_path y stop_image_path en realidad no estan fucionando correctamente, la idea es la siguiente:
+1. Por defecto la imagen utiliza `neuralgt-icon.png`
+2. Cuando el usuario dice el wake word, entonces la imagen cambia a `neuralgt-icon-active.png`
+3. Cuando el usuario deja de hablar, la imagen cambia a `neuralgt-icon.png`
+
+En resumen:
+1. La imagen por defecto es `neuralgt-icon.png`, que tambien indica que no se ha dicho el wake word, o que el proceso del STT ha finalizado (el usuario ya no esta hablando, obviamente luego de decir el wake word).
+2. Cuando se detecta el wake word y luego el usuario esta hablando, `neuralgt-icon-active.png` actua como un indicador para el usuario de que ha dicho el wake word y que su audio esta siendo "escuchado" procesado por el STT.
+
+por defecto -> `neuralgt-icon.png` -> luego usuario dice el wake word y empieza a hablar -> `neuralgt-icon-active.png` -> el usuario ha dejado de hablar -> vuelta al estado por defecto -> `neuralgt-icon.png`

@@ -10,6 +10,7 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import pvporcupine
 from pvrecorder import PvRecorder
+from utils.audio_utils import play_sound
 from dotenv import load_dotenv 
 load_dotenv()
 
@@ -29,7 +30,7 @@ class SpeechToText:
         with self.source as s:
             self.recorder.adjust_for_ambient_noise(s)
 
-        self.keyword_paths = [os.path.join("models", "Astra_es_windows_v3_0_0.ppn")]  # Ruta correcta del archivo
+        self.keyword_paths = [os.path.join("models", "Astra_es_windows_v3_0_0.ppn")]
         self.model_path = os.path.join("models", "porcupine_params_es.pv")
         self.porcupine = pvporcupine.create(
             access_key=os.getenv("PORCUPINE_ACCESS_KEY"),
@@ -55,6 +56,7 @@ class SpeechToText:
                 pcm = self.audio_recorder.read()
                 result = self.porcupine.process(pcm)
                 if result >= 0:
+                    play_sound("wake-word-detected.mp3")
                     logger.info("Wake word detected!")
                     command = self.listen_for_activation()
                     if command:

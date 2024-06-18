@@ -36,6 +36,14 @@ def request_payload(query: str, chat_history: list) -> dict:
                     },
                     "required": ["text"]
                 }
+            },
+            {
+                "name": "stop_speaking",
+                "description": "Stop the assistant from speaking",
+                "parameters": {
+                    "type": "object",
+                    "properties": {}
+                }
             }
         ]
     }

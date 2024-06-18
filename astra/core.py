@@ -35,6 +35,9 @@ class Assistant:
         
         threading.Thread(target=listen_and_process, daemon=True).start()
 
+    def stop_speaking(self):
+        self.tts.stop()
+
     def ask_gpt(self, query):
         try:
             self.chat_history.append({"role": "user", "content": query})
@@ -86,7 +89,8 @@ class Assistant:
 
         function_mapping = {
             "analyze_image": self.handle_analyze_image,
-            "type_text": self.handle_type_text
+            "type_text": self.handle_type_text,
+            "stop_speaking": self.handle_stop_speaking
         }
 
         handler = function_mapping.get(function_name)
@@ -94,6 +98,10 @@ class Assistant:
             handler(params, command)
         else:
             self._handle_unknown_function()
+
+    def handle_stop_speaking(self, params, command):
+        self.stop_speaking()
+        self.update_ui("Astra", "Speech stopped.")
 
     def handle_analyze_image(self, params, command):
         image_source = params.get("source")
@@ -111,7 +119,6 @@ class Assistant:
         text = params.get("text")
         explanation = self.typer.type_code(text)
         if explanation:
-            #self.tts.speak(explanation)
             self.update_ui("Astra", explanation)
 
     def process_command(self, command):
@@ -141,15 +148,9 @@ class Assistant:
         self.tts.speak(message)
         self.update_ui("Astra", message)
         if "```" in message:
-            explanation = self.typer.type_code
-
-    def _process_message_content(self, message):
-        self.tts.speak(message)
-        self.update_ui("Astra", message)
-        if "```" in message:
             explanation = self.typer.type_code(message)
             if explanation:
-                #self.tts.speak(explanation)
+                self.tts.speak(explanation)
                 self.update_ui("Astra", explanation)
 
     def _handle_unknown_function(self):

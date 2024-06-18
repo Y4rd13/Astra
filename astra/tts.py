@@ -16,9 +16,16 @@ class TextToSpeech:
         self.voice = voice
         self.model = model
         self.visualizer = visualizer
+        self.current_stop_event = None
         logger.info(f"Model: {model} - Voice: {voice}")
 
     def speak(self, text):
+        if self.current_stop_event:
+            self.current_stop_event.set()
+
+        stop_event = threading.Event()
+        self.current_stop_event = stop_event
+
         def play_text():
             play_sound("message-incoming.mp3")
             player_stream = pyaudio.PyAudio().open(format=pyaudio.paInt16, channels=1, rate=24000, output=True)
@@ -33,6 +40,8 @@ class TextToSpeech:
             ) as response:
                 logger.info(f"Time to first byte: {int((time.time() - start_time) * 1000)}ms")
                 for chunk in response.iter_bytes(chunk_size=1024):
+                    if stop_event.is_set():
+                        break
                     player_stream.write(chunk)
                     if self.visualizer:
                         # Convert chunk to numpy data and update the visualizer
@@ -46,6 +55,8 @@ class TextToSpeech:
             logger.info(f"Done in {int((time.time() - start_time) * 1000)}ms.")
             player_stream.close()
 
-        # Run the play_text function in a separate thread
         threading.Thread(target=play_text).start()
 
+    def stop(self):
+        if self.current_stop_event:
+            self.current_stop_event.set()

@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 class SpeechToText:
     def __init__(self, model_name="large-v3", device_index: int = 2):
-        device_index=1
+        device_index = 1
         self.recorder = sr.Recognizer()
         self.source = sr.Microphone(sample_rate=16000, device_index=2)
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -39,6 +39,7 @@ class SpeechToText:
         )
         self.audio_recorder = PvRecorder(device_index=device_index, frame_length=self.porcupine.frame_length)
         self.audio_recorder.start()
+        self.stop_listening = False
 
     async def load_model_async(self):
         loop = asyncio.get_running_loop()
@@ -52,7 +53,7 @@ class SpeechToText:
     def listen_for_wake_word(self):
         logger.info("Listening for wake word...")
         try:
-            while True:
+            while not self.stop_listening:
                 pcm = self.audio_recorder.read()
                 result = self.porcupine.process(pcm)
                 if result >= 0:
@@ -64,10 +65,6 @@ class SpeechToText:
                         return command
         except KeyboardInterrupt:
             logger.info("Stopping...")
-        # finally:
-        #     self.audio_recorder.stop()
-        #     self.audio_recorder.delete()
-        #     self.porcupine.delete()
 
     def listen_for_activation(self):
         if not self.audio_model:
@@ -87,10 +84,5 @@ class SpeechToText:
             logger.info(f"Recognized text: {text}")
             return text
 
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(name)s] [%(levelname)s] - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    
-    stt = SpeechToText(model_name="large-v3", device_index=1)
-    command = stt.listen_for_wake_word()
-    if command:
-        print(f"Detected command: {command}")
+    def stop(self):
+        self.stop_listening = True

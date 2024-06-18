@@ -7,7 +7,7 @@
     },
     "models": {
         "tts": {
-            "model": "tts-1",
+            "model": "tts-1-hd",
             "voice": "nova"
         },
         "stt": {

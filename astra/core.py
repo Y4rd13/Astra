@@ -1,6 +1,7 @@
 import json
 import logging
 import tiktoken
+import threading
 from openai import OpenAI
 from .stt import SpeechToText
 from .tts import TextToSpeech
@@ -23,6 +24,16 @@ class Assistant:
 
         self.chat_history = []
         self.tokenizer = tiktoken.encoding_for_model("gpt-4o")
+        self.start_listening()
+    
+    def start_listening(self):
+        def listen_and_process():
+            while True:
+                command = self.stt.listen_for_wake_word()
+                if command:
+                    self.process_command(command)
+        
+        threading.Thread(target=listen_and_process, daemon=True).start()
 
     def ask_gpt(self, query):
         try:
@@ -119,10 +130,6 @@ class Assistant:
             else:
                 self._handle_processing_failure()
 
-    def start_recording(self):
-        command = self.stt.listen_for_activation().lower()
-        self.process_command(command)
-
     def update_ui(self, sender, message):
         if self.ui_callback:
             self.ui_callback(sender, message)
@@ -134,19 +141,25 @@ class Assistant:
         self.tts.speak(message)
         self.update_ui("Astra", message)
         if "```" in message:
+            explanation = self.typer.type_code
+
+    def _process_message_content(self, message):
+        self.tts.speak(message)
+        self.update_ui("Astra", message)
+        if "```" in message:
             explanation = self.typer.type_code(message)
             if explanation:
                 self.tts.speak(explanation)
                 self.update_ui("Astra", explanation)
 
     def _handle_unknown_function(self):
-        self.tts.speak("I can't perform that action.")
-        self.update_ui("Astra", "I can't perform that action.")
+        self.tts.speak("No puedo realizar esa acción.")
+        self.update_ui("Astra", "No puedo realizar esa acción.")
 
     def _handle_analysis_failure(self):
-        self.tts.speak("Sorry, I couldn't analyze the image.")
-        self.update_ui("Astra", "Sorry, I couldn't analyze the image.")
+        self.tts.speak("Lo siento, no pude analizar la imagen.")
+        self.update_ui("Astra", "Lo siento, no pude analizar la imagen.")
 
     def _handle_processing_failure(self):
-        self.tts.speak("Sorry, there was an error processing your request.")
-        self.update_ui("Astra", "Sorry, there was an error processing your request.")
+        self.tts.speak("Lo siento, hubo un error al procesar tu solicitud.")
+        self.update_ui("Astra", "Lo siento, hubo un error al procesar tu solicitud.")

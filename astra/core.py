@@ -111,7 +111,7 @@ class Assistant:
         text = params.get("text")
         explanation = self.typer.type_code(text)
         if explanation:
-            self.tts.speak(explanation)
+            #self.tts.speak(explanation)
             self.update_ui("Astra", explanation)
 
     def process_command(self, command):
@@ -149,7 +149,7 @@ class Assistant:
         if "```" in message:
             explanation = self.typer.type_code(message)
             if explanation:
-                self.tts.speak(explanation)
+                #self.tts.speak(explanation)
                 self.update_ui("Astra", explanation)
 
     def _handle_unknown_function(self):

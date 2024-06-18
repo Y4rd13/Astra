@@ -13,13 +13,12 @@ from utils.overlay_utils import create_overlay, start_move, do_move
 from utils.window_state_utils import on_minimize, on_restore
 from utils.settings_utils import open_settings, create_sound_settings, create_macros_settings, create_models_settings, create_appearance_settings
 from utils.tray_utils import create_tray_icon, show_main_window, exit_app
-from utils.ui_utils import create_widgets, send_text, append_message, VoiceVisualizer
+from utils.ui_utils import create_widgets, send_text, append_message, center_window_to_display, VoiceVisualizer
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(name)s] [%(levelname)s] - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 logger = logging.getLogger(__name__)
 
 from astra.core import Assistant
-from utils.app_utils import center_window_to_display
 from config.settings import Settings
 
 class AstraApp:

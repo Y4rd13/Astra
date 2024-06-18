@@ -11,12 +11,12 @@
             "voice": "nova"
         },
         "stt": {
-            "model": "medium"
+            "model": "large-v3"
         },
         "ai": "gpt-4o"
     },
     "appearance": {
-        "transparency": 0.9235,
+        "transparency": 0.811,
         "theme": "Dark"
     }
 }

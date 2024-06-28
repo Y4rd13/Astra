@@ -10,6 +10,7 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import pvporcupine
 from pvrecorder import PvRecorder
+from huggingface_hub import hf_hub_download
 from utils.audio_utils import play_sound
 from dotenv import load_dotenv 
 load_dotenv()
@@ -30,8 +31,8 @@ class SpeechToText:
         with self.source as s:
             self.recorder.adjust_for_ambient_noise(s)
 
-        self.keyword_paths = [os.path.join("models", "Astra_es_windows_v3_0_0.ppn")]
-        self.model_path = os.path.join("models", "porcupine_params_es.pv")
+        self.keyword_paths = [self.download_model_from_huggingface("Y4rd13/Astra_es_windows_v3_0_0.ppn", "Astra_es_windows_v3_0_0.ppn")]
+        self.model_path = self.download_model_from_huggingface("Y4rd13/porcupine_params_es.pv", "porcupine_params_es.pv")
         self.porcupine = pvporcupine.create(
             access_key=os.getenv("PORCUPINE_ACCESS_KEY"),
             keyword_paths=self.keyword_paths,
@@ -41,6 +42,7 @@ class SpeechToText:
         self.audio_recorder.start()
         self.stop_listening = False
 
+
     async def load_model_async(self):
         loop = asyncio.get_running_loop()
         with ThreadPoolExecutor() as pool:
@@ -49,6 +51,11 @@ class SpeechToText:
 
     def load_model(self):
         return WhisperModel(self.model_size, device=self.device, compute_type="float16" if self.device == "cuda" else "int8")
+
+    def download_model_from_huggingface(self, model_repo, filename):
+        api_key = os.getenv("HUGGINGFACE_API_KEY")
+        model_file = hf_hub_download(repo_id=model_repo, filename=filename, use_auth_token=api_key)
+        return model_file
 
     def listen_for_wake_word(self):
         logger.info("Listening for wake word...")

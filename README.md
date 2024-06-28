@@ -129,6 +129,7 @@ Enjoy using **Astra Assistant**! If you encounter any issues, feel free to open 
    - [x] Implement function calling to stop the audio (i.e. Astra stop).
    - [x] New user's input will be priority over the current audio input. 
    - [ ] Update input audio device settings to allow users to select the desired microphone.
+   - [x] Loading async `Astra_es_windows_v3_0_0.ppn` and `porcupine_params_es.pv` from Hugging Face.
 
 3. **Vision**
    - [ ] semantic-chunking for video chunking analysis, instead of the current implementation.

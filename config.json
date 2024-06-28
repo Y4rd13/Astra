@@ -7,16 +7,16 @@
     },
     "models": {
         "tts": {
-            "model": "tts-1",
+            "model": "tts-1-hd",
             "voice": "nova"
         },
         "stt": {
-            "model": "medium"
+            "model": "large-v3"
         },
         "ai": "gpt-4o"
     },
     "appearance": {
-        "transparency": 0.9235,
+        "transparency": 0.8785,
         "theme": "Dark"
     }
 }

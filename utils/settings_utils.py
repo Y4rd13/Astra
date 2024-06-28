@@ -1,11 +1,11 @@
 import customtkinter as ctk
 import sounddevice as sd
-from . import app_utils
+from . import ui_utils
 
 def open_settings(self):
     settings_window = ctk.CTkToplevel(self.root)
     settings_window.title("Settings")
-    settings_window.geometry(app_utils.center_window_to_display(settings_window, 600, 400, settings_window._get_window_scaling()))
+    settings_window.geometry(ui_utils.center_window_to_display(settings_window, 600, 400, settings_window._get_window_scaling()))
     settings_window.resizable(False, False)
     settings_window.attributes('-alpha', 0.98)
     

@@ -18,14 +18,12 @@ def play_sound(sound_file: str):
             pygame.mixer.music.load(sound_path)
             pygame.mixer.music.play()
 
-            # Wait until playback is finished
             while pygame.mixer.music.get_busy():
                 pygame.time.Clock().tick(10)
 
         except Exception as e:
             logger.error(f"Error playing sound: {e}")
 
-    # Run the play function in a separate thread
     threading.Thread(target=play).start()
 
 def toggle_recording(self):
@@ -36,15 +34,13 @@ def toggle_recording(self):
 
 def start_recording(self):
     self.recording = True
-    self.record_button.configure(image=self.image_stop)
-    self.overlay_record_button.configure(image=self.overlay_image_stop)
+    self.update_record_label(True)
     self.recording_thread = threading.Thread(target=self.record_and_process_audio)
     self.recording_thread.start()
 
 def stop_recording(self):
     self.recording = False
-    self.record_button.configure(image=self.image_record)
-    self.overlay_record_button.configure(image=self.overlay_image_record)
+    self.update_record_label(False)
 
 def record_and_process_audio(self):
     while self.recording:
@@ -85,7 +81,7 @@ def test_input_device(self, device_index):
         if status:
             logger.info(f'Status: {status}')
         volume_norm = np.linalg.norm(indata) * 10
-        self.progress_bar.set(volume_norm / 100)  # Update the progress bar based on volume
+        self.progress_bar.set(volume_norm / 100)
 
     try:
         with sd.InputStream(device=device_index, callback=audio_callback, channels=1, samplerate=44100) as stream:
